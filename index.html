@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elise Quest 2026 - Ultimate</title>
+    <title>Elise Quest 2026 - Master</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
@@ -15,7 +15,7 @@
             --xp-color: #3fb950;
             --culture: #1f6feb; --projets: #d29922; --etudes: #8957e5;
             --amour: #db61a2; --bienetre: #238636; --finance: #9e6a03;
-            --quotidien: #fca311; /* Nouvelle couleur pour le quotidien */
+            --quotidien: #fca311;
         }
 
         body {
@@ -27,7 +27,7 @@
         #header-status {
             width: 95%; max-width: 900px; border: 3px solid #30363d;
             padding: 25px; text-align: center; background: var(--panel-color);
-            margin-bottom: 30px; border-radius: 12px; position: relative;
+            margin-bottom: 20px; border-radius: 12px; position: relative;
         }
 
         .streak-stack {
@@ -35,76 +35,88 @@
             display: flex; flex-direction: column; align-items: center;
             color: #ff9f43; font-size: 0.5rem;
         }
-        .streak-stack span { font-size: 1.5rem; margin-bottom: 5px; }
 
+        /* --- CALENDRIER QUOTIDIEN --- */
+        #daily-hub {
+            width: 95%; max-width: 900px; background: #0d1117;
+            border: 3px solid var(--quotidien); padding: 15px;
+            border-radius: 12px; margin-bottom: 20px;
+        }
+
+        .calendar-grid {
+            display: flex; gap: 4px; overflow-x: auto; padding: 10px 0;
+            scrollbar-width: none;
+        }
+
+        .calendar-day {
+            min-width: 14px; height: 14px; background: #21262d; border-radius: 2px;
+            position: relative;
+        }
+
+        /* Couleurs du dégradé */
+        .day-lvl-1 { background: #0e4429; } /* Un peu fait */
+        .day-lvl-2 { background: #006d32; } /* Moyen fait */
+        .day-lvl-3 { background: #26a641; } /* Bien fait */
+        .day-lvl-4 { background: #39d353; box-shadow: 0 0 5px #39d353; } /* Parfait ! */
+
+        /* --- RESTE DU DESIGN --- */
         .progress-container {
             width: 100%; height: 28px; background: #000; border: 2px solid #30363d; 
             margin: 15px 0; border-radius: 6px; overflow: hidden;
         }
-
         .bar { height: 100%; background: var(--xp-color); width: 0%; transition: width 0.5s ease; }
 
         .category-menu {
             display: grid; grid-template-columns: repeat(2, 1fr);
-            gap: 15px; width: 95%; max-width: 900px; margin-bottom: 30px;
+            gap: 12px; width: 95%; max-width: 900px; margin-bottom: 20px;
         }
-
         @media (min-width: 600px) { .category-menu { grid-template-columns: repeat(3, 1fr); } }
 
         .menu-btn {
             color: #fff; border: none; font-family: 'Press Start 2P', cursive; 
-            padding: 20px 10px; cursor: pointer; transition: all 0.2s ease;
-            border-radius: 10px; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; gap: 12px;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.3);
+            padding: 15px 5px; cursor: pointer; border-radius: 8px;
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
         }
-
-        .menu-btn .btn-icon { font-size: 2.2rem; }
-        .menu-btn .btn-text { font-size: 0.55rem; letter-spacing: 1px; }
-        .menu-btn .btn-stats { font-size: 0.4rem; opacity: 0.9; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px; }
-
-        .menu-btn:hover { transform: translateY(-3px); filter: brightness(1.1); }
-        .menu-btn.active { outline: 3px solid #fff; outline-offset: 2px; transform: scale(1.02); }
+        .menu-btn .btn-icon { font-size: 1.8rem; }
+        .menu-btn .btn-text { font-size: 0.45rem; }
 
         #active-quest-zone {
             width: 95%; max-width: 900px; border: 3px solid #30363d;
-            background: var(--panel-color); padding: 30px; display: none;
-            border-radius: 12px; box-sizing: border-box;
+            background: var(--panel-color); padding: 25px; display: none;
+            border-radius: 12px; box-sizing: border-box; margin-top: 10px;
         }
 
-        .char-info-top { display: flex; align-items: center; gap: 20px; margin-bottom: 25px; }
-        .avatar-large { font-size: 4rem; }
-
-        .section-title { font-size: 0.55rem; color: #8b949e; margin: 35px 0 15px 0; display: flex; justify-content: space-between; }
         .task-item {
-            display: flex; align-items: center; gap: 15px;
-            background: #0d1117; margin-bottom: 12px; padding: 15px;
+            display: flex; align-items: center; gap: 12px;
+            background: #0d1117; margin-bottom: 10px; padding: 12px;
             border-radius: 8px; border: 1px solid #30363d;
         }
-
-        .task-text { flex-grow: 1; font-size: 0.5rem; line-height: 1.6; }
+        .task-text { flex-grow: 1; font-size: 0.45rem; line-height: 1.4; }
         .task-item.done { border-color: var(--xp-color); opacity: 0.6; }
-        
-        .add-zone { display: flex; gap: 10px; margin-top: 20px; }
+        .del-btn { color: var(--accent-color); cursor: pointer; font-size: 0.6rem; }
+
         input[type="text"] {
             flex-grow: 1; background: #000; border: 2px solid #30363d;
-            color: #fff; padding: 15px; font-family: 'Press Start 2P'; font-size: 0.5rem; border-radius: 8px;
+            color: #fff; padding: 12px; font-family: 'Press Start 2P'; font-size: 0.5rem;
         }
-        .btn-add { background: var(--xp-color); color: #000; border: none; padding: 0 20px; border-radius: 8px; cursor: pointer; font-family: 'Press Start 2P'; font-size: 0.6rem; }
-
-        .del-btn { color: var(--accent-color); cursor: pointer; font-size: 0.7rem; margin-left: 10px; }
+        .btn-add { background: var(--xp-color); border: none; padding: 10px 15px; cursor: pointer; font-family: 'Press Start 2P'; font-size: 0.5rem; }
     </style>
 </head>
 <body>
 
     <div id="header-status">
-        <div class="streak-stack">
-            <span id="streak-icon">🔥</span>
-            <div id="streak-count">0 JOURS</div>
-        </div>
-        <h1 style="font-size: 1.1rem; margin-bottom: 20px; color: #fff;">ELISE QUEST 2026</h1>
+        <div class="streak-stack"><span>🔥</span><div id="streak-count">0</div></div>
+        <h1 style="font-size: 1rem; color: #fff;">ELISE QUEST 2026</h1>
         <div class="progress-container"><div id="global-bar" class="bar"></div></div>
-        <div style="font-size: 0.45rem;">OBJECTIFS MONDIAUX : <span id="global-val">0</span>%</div>
+        <div style="font-size: 0.4rem;">PROGRESSION GLOBALE : <span id="global-val">0</span>%</div>
+    </div>
+
+    <div id="daily-hub">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 0.5rem; color: var(--quotidien);">⚡ ROUTINE QUOTIDIENNE</span>
+            <button onclick="showCategory('quotidien')" style="background: var(--quotidien); border:none; padding: 5px; font-family: 'Press Start 2P'; font-size: 0.4rem; cursor:pointer;">OUVRIR</button>
+        </div>
+        <div class="calendar-grid" id="calendar"></div>
     </div>
 
     <div class="category-menu" id="menu"></div>
@@ -118,7 +130,7 @@
 <script>
     const LEVELS = [0, 5, 15, 35, 85];
 
-    let data = JSON.parse(localStorage.getItem('eliseQuest2026_Final_V6')) || {
+    let data = JSON.parse(localStorage.getItem('eliseQuest2026_V7')) || {
         quotidien: { name: "Routine", avatar: "⚡", color: "var(--quotidien)", tasks: [] },
         culture: { name: "Biblios", avatar: "📚", color: "var(--culture)", tasks: [] },
         projets: { name: "Nova", avatar: "🚀", color: "var(--projets)", tasks: [] },
@@ -126,37 +138,53 @@
         amour: { name: "Lumina", avatar: "💖", color: "var(--amour)", tasks: [] },
         bienetre: { name: "Vita", avatar: "🧘‍♀️", color: "var(--bienetre)", tasks: [] },
         finance: { name: "Aurum", avatar: "💰", color: "var(--finance)", tasks: [] },
-        streak: { count: 0, lastDate: null, lastCompletedDate: null }
+        streak: { count: 0, lastDate: null, lastCompletedDate: null },
+        history: {} // Pour le calendrier : { "dateString": %completion }
     };
 
     function init() {
         checkDailyReset();
-        checkStreak();
+        renderCalendar();
         const menu = document.getElementById('menu');
         menu.innerHTML = '';
         for (const [id, cat] of Object.entries(data)) {
-            if (id === 'streak') continue;
-            const todo = cat.tasks.filter(t => !t.d).length;
+            if (id === 'streak' || id === 'history' || id === 'quotidien') continue;
             const done = cat.tasks.filter(t => t.d).length;
             const lvl = getLevel(done);
-
-            const displayName = id === 'bienetre' ? 'BIEN-ÊTRE' : id.toUpperCase();
-
             const btn = document.createElement('button');
             btn.className = `menu-btn ${activeCat === id ? 'active' : ''}`;
             btn.style.backgroundColor = cat.color;
             btn.innerHTML = `
                 <span class="btn-icon">${cat.avatar}</span>
-                <span class="btn-text">${displayName} (LVL ${lvl})</span>
-                <span class="btn-stats">EN COURS: ${todo} | FINI: ${done}</span>
+                <span class="btn-text">${id === 'bienetre' ? 'BIEN-ÊTRE' : id.toUpperCase()}</span>
+                <span style="font-size:0.35rem; opacity:0.8;">LVL ${lvl}</span>
             `;
             btn.onclick = () => showCategory(id);
             menu.appendChild(btn);
         }
         updateGlobal();
+        document.getElementById('streak-count').innerText = data.streak.count;
     }
 
-    // Réinitialise la catégorie "quotidien" chaque jour
+    function renderCalendar() {
+        const cal = document.getElementById('calendar');
+        cal.innerHTML = '';
+        const today = new Date();
+        // Affiche les 30 derniers jours
+        for (let i = 29; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(today.getDate() - i);
+            const dateStr = d.toDateString();
+            const score = data.history[dateStr] || 0;
+            
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'calendar-day';
+            if (score > 0) dayDiv.classList.add(score > 75 ? 'day-lvl-4' : score > 50 ? 'day-lvl-3' : score > 25 ? 'day-lvl-2' : 'day-lvl-1');
+            dayDiv.title = `${dateStr} : ${score}%`;
+            cal.appendChild(dayDiv);
+        }
+    }
+
     function checkDailyReset() {
         const today = new Date().toDateString();
         if (data.streak.lastDate !== today) {
@@ -164,20 +192,6 @@
             data.streak.lastDate = today;
             save();
         }
-    }
-
-    function checkStreak() {
-        const today = new Date().toDateString();
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayStr = yesterday.toDateString();
-
-        if (data.streak.lastCompletedDate && data.streak.lastCompletedDate !== today && data.streak.lastCompletedDate !== yesterdayStr) {
-            data.streak.count = 0;
-        }
-
-        document.getElementById('streak-count').innerText = `${data.streak.count} JOURS`;
-        document.getElementById('streak-icon').style.opacity = data.streak.count > 0 ? "1" : "0.3";
     }
 
     function getLevel(count) {
@@ -188,123 +202,75 @@
         return 1;
     }
 
-    function getXpProgress(count) {
-        const currentLvl = getLevel(count);
-        const currentFloor = LEVELS[currentLvl - 1];
-        const nextFloor = LEVELS[currentLvl] || 999;
-        const xpInLevel = count - currentFloor;
-        const totalNeededInLevel = nextFloor - currentFloor;
-        const pct = Math.min((xpInLevel / totalNeededInLevel) * 100, 100);
-        return { pct, xpInLevel, totalNeededInLevel, currentLvl };
-    }
-
     let activeCat = null;
-
     function showCategory(id) {
         activeCat = id;
         const zone = document.getElementById('active-quest-zone');
         zone.style.display = 'block';
-        zone.style.borderColor = data[id].color;
-        
         const cat = data[id];
         const doneCount = cat.tasks.filter(t => t.d).length;
-        const xp = getXpProgress(doneCount);
-        const todoTasks = cat.tasks.filter(t => !t.d);
-        const doneTasks = cat.tasks.filter(t => t.d);
-
-        const displayName = id === 'bienetre' ? 'BIEN-ÊTRE' : id.toUpperCase();
+        const xp = ((doneCount - LEVELS[getLevel(doneCount)-1]) / ((LEVELS[getLevel(doneCount)] || 100) - LEVELS[getLevel(doneCount)-1])) * 100;
 
         document.getElementById('quest-content').innerHTML = `
-            <div class="char-info-top">
-                <div class="avatar-large">${cat.avatar}</div>
+            <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
+                <span style="font-size:3rem;">${cat.avatar}</span>
                 <div>
-                    <h2 style="font-size:0.9rem; margin:0; color:${cat.color}">${cat.name}</h2>
-                    <p style="font-size:0.5rem; margin-top:10px;">RANG : NIVEAU ${xp.currentLvl}</p>
-                    ${id === 'quotidien' ? '<p style="font-size:0.35rem; color:#fca311;">⚡ Reset auto à minuit</p>' : ''}
+                    <h2 style="font-size:0.8rem; margin:0; color:${cat.color}">${id === 'bienetre' ? 'BIEN-ÊTRE' : id.toUpperCase()}</h2>
+                    <p style="font-size:0.4rem;">NIVEAU ${getLevel(doneCount)}</p>
                 </div>
             </div>
-            <div style="font-size:0.4rem; color:#8b949e; margin-bottom:8px;">
-                XP POUR NIVEAU ${xp.currentLvl + 1} : ${xp.xpInLevel} / ${xp.totalNeededInLevel}
-            </div>
-            <div class="progress-container"><div class="bar" style="width:${xp.pct}%; background:${cat.color}"></div></div>
+            <div class="progress-container"><div class="bar" style="width:${xp}%; background:${cat.color}"></div></div>
             <div class="add-zone">
-                <input type="text" id="new-task-input" placeholder="NOUVEL OBJECTIF..." onkeyup="if(event.key==='Enter') addTask()">
+                <input type="text" id="new-task-input" placeholder="OBJECTIF..." onkeyup="if(event.key==='Enter') addTask()">
                 <button class="btn-add" style="background:${cat.color}; color:#fff" onclick="addTask()">OK</button>
             </div>
-            <div class="section-title"><span>OBJECTIFS EN COURS</span> <span>(${todoTasks.length})</span></div>
-            <ul class="task-list">${renderList(todoTasks, false)}</ul>
-            ${doneTasks.length > 0 ? `<div class="section-title"><span>TERMINÉS</span> <span>(${doneTasks.length})</span></div><ul class="task-list">${renderList(doneTasks, true)}</ul>` : ''}
+            <ul class="task-list">
+                ${cat.tasks.map((t, i) => `
+                    <li class="task-item ${t.d ? 'done' : ''}">
+                        <input type="checkbox" ${t.d ? 'checked' : ''} onchange="toggleTask(${data[id].tasks.indexOf(t)})">
+                        <span class="task-text">${t.t}</span>
+                        <span class="del-btn" onclick="deleteTask(${data[id].tasks.indexOf(t)})">✖</span>
+                    </li>
+                `).join('')}
+            </ul>
         `;
-        init(); 
+        init();
     }
 
-    function renderList(tasks, isDone) {
-        return tasks.map(task => {
-            const idx = data[activeCat].tasks.indexOf(task);
-            return `<li class="task-item ${isDone ? 'done' : ''}">
-                <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleTask(${idx})" style="transform: scale(1.5);">
-                <span class="task-text">${task.t}</span>
-                <span class="del-btn" onclick="deleteTask(${idx})">✖</span>
-            </li>`;
-        }).join('');
-    }
-
-    function toggleTask(index) {
+    function toggleTask(idx) {
         const today = new Date().toDateString();
-        const alreadyDoneToday = (data.streak.lastCompletedDate === today);
-        
-        const wasDone = data[activeCat].tasks[index].d;
-        const oldLvl = getLevel(data[activeCat].tasks.filter(t => t.d).length);
-        data[activeCat].tasks[index].d = !data[activeCat].tasks[index].d;
-        const newLvl = getLevel(data[activeCat].tasks.filter(t => t.d).length);
+        const wasDone = data[activeCat].tasks[idx].d;
+        data[activeCat].tasks[idx].d = !data[activeCat].tasks[idx].d;
 
-        if (!wasDone && data[activeCat].tasks[index].d) {
-            if (!alreadyDoneToday) {
-                data.streak.count++;
-                data.streak.lastCompletedDate = today;
-            }
+        if (activeCat === 'quotidien') {
+            const done = data.quotidien.tasks.filter(t => t.d).length;
+            data.history[today] = Math.round((done / data.quotidien.tasks.length) * 100);
         }
 
-        if (newLvl > oldLvl) {
-            document.getElementById('lvlup-sound').play();
-            confetti({ particleCount: 200, spread: 80, origin: { y: 0.7 } });
+        if (!wasDone && data[activeCat].tasks[idx].d && data.streak.lastCompletedDate !== today) {
+            data.streak.count++;
+            data.streak.lastCompletedDate = today;
         }
+
         saveAndRefresh();
     }
 
     function addTask() {
-        const input = document.getElementById('new-task-input');
-        if (input.value.trim() !== "") {
-            data[activeCat].tasks.push({ t: input.value, d: false });
-            input.value = "";
-            saveAndRefresh();
-        }
+        const val = document.getElementById('new-task-input').value;
+        if (val) { data[activeCat].tasks.push({t: val, d: false}); saveAndRefresh(); }
     }
 
-    function deleteTask(index) {
-        data[activeCat].tasks.splice(index, 1);
-        saveAndRefresh();
-    }
+    function deleteTask(idx) { data[activeCat].tasks.splice(idx, 1); saveAndRefresh(); }
 
     function updateGlobal() {
-        let total = 0, done = 0;
-        for (const key in data) {
-            if(data[key].tasks) {
-                total += data[key].tasks.length;
-                done += data[key].tasks.filter(t => t.d).length;
-            }
-        }
-        const pct = total === 0 ? 0 : Math.round((done / total) * 100);
-        document.getElementById('global-bar').style.width = pct + '%';
-        document.getElementById('global-val').innerText = pct;
+        let t = 0, d = 0;
+        for (let k in data) if(data[k].tasks) { t += data[k].tasks.length; d += data[k].tasks.filter(x=>x.d).length; }
+        document.getElementById('global-bar').style.width = (t===0?0:(d/t)*100) + '%';
+        document.getElementById('global-val').innerText = Math.round(t===0?0:(d/t)*100);
     }
 
-    function save() { localStorage.setItem('eliseQuest2026_Final_V6', JSON.stringify(data)); }
-    function saveAndRefresh() {
-        save();
-        if(activeCat) showCategory(activeCat);
-        else init();
-    }
+    function save() { localStorage.setItem('eliseQuest2026_V7', JSON.stringify(data)); }
+    function saveAndRefresh() { save(); showCategory(activeCat); }
 
     init();
 </script>
