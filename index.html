@@ -3,237 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elise Quest 2026</title>
+    <title>Elise Quest 2026 - Système Auto</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #1a1a2e;
-            --panel-color: #16213e;
-            --accent-color: #e94560;
-            --text-color: #fff;
-            --xp-color: #4ecca3;
+            --bg-color: #0d0221;
+            --panel-color: #261447;
+            --accent-color: #ff3864;
+            --text-color: #ffffff;
+            --xp-color: #00f5d4;
+            --border-pixel: 4px solid #ffffff;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: 'Press Start 2P', cursive;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        /* --- Page de Garde --- */
-        #hero-section {
-            text-align: center;
-            border: 4px solid var(--accent-color);
-            padding: 20px;
-            width: 90%;
-            max-width: 800px;
-            margin-bottom: 30px;
-            background: rgba(0,0,0,0.5);
+        /* HEADER & BARRE GLOBALE */
+        #header-status {
+            width: 90%; max-width: 900px;
+            border: var(--border-pixel);
+            padding: 20px; text-align: center;
+            background: var(--panel-color);
+            margin-bottom: 40px;
+            box-shadow: 8px 8px 0px var(--accent-color);
         }
 
-        .main-title {
-            font-size: 1.5rem;
-            color: var(--accent-color);
-            text-shadow: 3px 3px #000;
+        .progress-container {
+            width: 100%; height: 25px;
+            background: #111; border: 2px solid #fff;
+            margin: 15px 0; position: relative;
         }
 
-        .global-progress-container {
-            width: 100%;
-            height: 30px;
-            background: #333;
-            border: 2px solid #fff;
-            margin: 20px 0;
+        .bar {
+            height: 100%; background: var(--xp-color);
+            width: 0%; transition: width 0.4s ease;
         }
 
-        #global-bar {
-            width: 45%; /* Dynamique */
-            height: 100%;
-            background: var(--xp-color);
-            transition: width 0.5s ease-in-out;
-        }
-
-        /* --- Grille des Personnages --- */
+        /* GRID DES PERSONNAGES */
         .char-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            width: 100%;
-            max-width: 1200px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px; width: 100%; max-width: 1100px;
         }
 
         .char-card {
             background: var(--panel-color);
-            border: 3px solid #444;
+            border: var(--border-pixel);
             padding: 15px;
-            border-radius: 8px;
-            transition: transform 0.2s;
-        }
-
-        .char-card:hover {
-            transform: scale(1.02);
-            border-color: var(--accent-color);
+            position: relative;
         }
 
         .char-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 10px; border-bottom: 2px solid rgba(255,255,255,0.2);
+            padding-bottom: 10px;
         }
 
-        .avatar {
-            width: 60px;
-            height: 60px;
-            background: #555;
-            border: 2px solid #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-        }
+        .avatar { font-size: 2.5rem; }
+        .char-name { font-size: 0.7rem; color: var(--accent-color); }
+        .char-lvl { font-size: 0.5rem; margin-top: 5px; color: #aaa; }
 
-        .char-info h3 { font-size: 0.8rem; margin: 0; }
-        .level-badge { font-size: 0.6rem; color: var(--xp-color); }
-
-        /* --- Liste de tâches --- */
-        .task-list {
-            list-style: none;
-            padding: 0;
-            font-size: 0.6rem;
-        }
-
+        /* OBJECTIFS */
+        .task-list { list-style: none; padding: 0; margin: 15px 0; }
         .task-item {
-            margin: 10px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-size: 0.55rem; line-height: 1.6;
+            display: flex; align-items: flex-start; gap: 8px;
+            margin-bottom: 10px; cursor: pointer;
         }
 
         input[type="checkbox"] {
-            cursor: pointer;
-            accent-color: var(--xp-color);
+            transform: scale(1.2); cursor: pointer;
         }
 
-        .motivation-quote {
-            font-size: 0.5rem;
-            font-style: italic;
-            margin-top: 15px;
-            color: #aaa;
+        .motivation {
+            font-size: 0.45rem; color: #00f5d4; text-align: right;
         }
     </style>
 </head>
 <body>
 
-    <div id="hero-section">
-        <h1 class="main-title">ELISE QUEST : 2026</h1>
-        <p>Progression Globale : <span id="global-pct">45</span>%</p>
-        <div class="global-progress-container">
-            <div id="global-bar" style="width: 45%;"></div>
+    <div id="header-status">
+        <h1 style="font-size: 1.2rem;">ELISE QUEST 2026</h1>
+        <div style="font-size: 0.6rem; margin: 10px 0;">COMPLÉTION TOTALE : <span id="global-val">0</span>%</div>
+        <div class="progress-container">
+            <div id="global-bar" class="bar"></div>
         </div>
-        <div style="font-size: 0.7rem;">
-            📅 Jours restants : <span id="days-left">363</span> | ⚡ État : En forme
-        </div>
+        <div style="font-size: 0.5rem;">STATUS: <span id="status-text">NOVICE</span> | JOURS RESTANTS: <span id="days">?</span></div>
     </div>
 
-    <div class="char-grid">
-        <div class="char-card">
-            <div class="char-header">
-                <div class="avatar">📚</div>
-                <div class="char-info">
-                    <h3>Biblios l'Érudite</h3>
-                    <div class="level-badge">LVL 5 - Archiviste</div>
-                </div>
-            </div>
-            <ul class="task-list">
-                <li class="task-item"><input type="checkbox"> Lire 24 livres</li>
-                <li class="task-item"><input type="checkbox"> 1 expo par mois</li>
-            </ul>
-            <div class="motivation-quote">"La connaissance est l'arme la plus puissante."</div>
+    <div class="char-grid" id="main-grid">
         </div>
 
-        <div class="char-card">
-            <div class="char-header">
-                <div class="avatar">🚀</div>
-                <div class="char-info">
-                    <h3>Nova l'Architecte</h3>
-                    <div class="level-badge">LVL 2 - Apprentie</div>
-                </div>
-            </div>
-            <ul class="task-list">
-                <li class="task-item"><input type="checkbox"> Roadtrip Japon</li>
-                <li class="task-item"><input type="checkbox"> Apprendre React.js</li>
-            </ul>
-        </div>
+<script>
+    // Configuration des personnages et de leurs 5 objectifs
+    const characters = [
+        {
+            id: 'culture',
+            name: 'Biblios l\'Érudite',
+            avatar: '📚',
+            tasks: ['Lire 24 livres', '1 musée/expo par mois', 'Apprendre 5 mots nouveaux/semaine', 'Écouter 50 podcasts', 'Finir 1 jeu narratif']
+        },
+        {
+            id: 'projets',
+            name: 'Nova l\'Architecte',
+            avatar: '🚀',
+            tasks: ['Lancer mon site web perso', 'Organiser le voyage Japon', 'Coder un projet JS complet', 'Apprendre le montage vidéo', 'Rédiger un carnet de bord']
+        },
+        {
+            id: 'etudes',
+            name: 'Astra la Sage',
+            avatar: '🎓',
+            tasks: ['Valider l\'année avec mention', 'Zéro retard en cours', 'Ficher chaque cours le jour J', 'Trouver le stage de rêve', 'Participer à 1 conférence']
+        },
+        {
+            id: 'amour',
+            name: 'Lumina l\'Amoureuse',
+            avatar: '💖',
+            tasks: ['1 date original par mois', 'Écrire 5 lettres manuscrites', 'Week-end surprise à deux', 'Album photo de l\'année', 'Rituel du soir sans écrans']
+        },
+        {
+            id: 'bienetre',
+            name: 'Vita la Vitaliste',
+            avatar: '🧘‍♀️',
+            tasks: ['3 séances de sport par semaine', 'Méditer 5 min chaque matin', 'Pas d\'écran après 22h30', 'Boire 1.5L d\'eau par jour', 'Marcher 8000 pas/jour']
+        },
+        {
+            id: 'finance',
+            name: 'Aurum la Trésorière',
+            avatar: '💰',
+            tasks: ['Atteindre l\'objectif d\'épargne', 'Tenir mon budget mensuel', 'Investir mes premiers euros', 'Zéro découvert sur l\'année', 'Vendre 10 objets inutilisés']
+        }
+    ];
 
-        <div class="char-card">
-            <div class="char-header">
-                <div class="avatar">🎓</div>
-                <div class="char-info">
-                    <h3>Astra la Sage</h3>
-                    <div class="level-badge">LVL 8 - Major</div>
-                </div>
-            </div>
-            <ul class="task-list">
-                <li class="task-item"><input type="checkbox"> Valider Semestre 1</li>
-                <li class="task-item"><input type="checkbox"> Stage trouvé</li>
-            </ul>
-        </div>
+    const grid = document.getElementById('main-grid');
 
-        <div class="char-card">
-            <div class="char-header">
-                <div class="avatar">💖</div>
-                <div class="char-info">
-                    <h3>Lumina l'Harmonieuse</h3>
-                    <div class="level-badge">LVL 12 - Duo Fusionnel</div>
+    // Initialisation
+    function init() {
+        characters.forEach(char => {
+            const card = document.createElement('div');
+            card.className = 'char-card';
+            card.innerHTML = `
+                <div class="char-header">
+                    <div class="avatar">${char.avatar}</div>
+                    <div class="char-info">
+                        <div class="char-name">${char.name}</div>
+                        <div class="char-lvl" id="lvl-${char.id}">LVL 1 - Débutante</div>
+                    </div>
                 </div>
-            </div>
-            <ul class="task-list">
-                <li class="task-item"><input type="checkbox"> 1 date par semaine</li>
-                <li class="task-item"><input type="checkbox"> Voyage en couple</li>
-            </ul>
-        </div>
-
-        <div class="char-card">
-            <div class="char-header">
-                <div class="avatar">🧘‍♀️</div>
-                <div class="char-info">
-                    <h3>Vita la Vitaliste</h3>
-                    <div class="level-badge">LVL 4 - Éveillée</div>
+                <div class="progress-container">
+                    <div id="bar-${char.id}" class="bar"></div>
                 </div>
-            </div>
-            <ul class="task-list">
-                <li class="task-item"><input type="checkbox"> 3 sessions sport/sem</li>
-                <li class="task-item"><input type="checkbox"> Sommeil > 7h</li>
-            </ul>
-        </div>
+                <ul class="task-list">
+                    ${char.tasks.map((task, i) => `
+                        <li class="task-item">
+                            <input type="checkbox" id="check-${char.id}-${i}" 
+                                   onchange="updateProgress()">
+                            <label for="check-${char.id}-${i}">${task}</label>
+                        </li>
+                    `).join('')}
+                </ul>
+                <div class="motivation">#Focus2026</div>
+            `;
+            grid.appendChild(card);
+        });
 
-        <div class="char-card">
-            <div class="char-header">
-                <div class="avatar">💰</div>
-                <div class="char-info">
-                    <h3>Aurum la Trésorière</h3>
-                    <div class="level-badge">LVL 3 - Épargnante</div>
-                </div>
-            </div>
-            <ul class="task-list">
-                <li class="task-item"><input type="checkbox"> Épargner 200€/mois</li>
-                <li class="task-item"><input type="checkbox"> Zéro achat compulsif</li>
-            </ul>
-        </div>
-    </div>
+        loadData();
+        updateProgress();
+        updateCalendar();
+    }
 
-    <script>
-        // Un petit script pour calculer le nombre de jours restants en 2026
-        const endOfYear = new Date('2026-12-31');
-        const today = new Date();
-        const diff = endOfYear - today;
+    function updateProgress() {
+        let totalChecked = 0;
+        let totalTasks = 0;
+
+        characters.forEach(char => {
+            let charChecked = 0;
+            char.tasks.forEach((_, i) => {
+                const cb = document.getElementById(`check-${char.id}-${i}`);
+                if (cb.checked) charChecked++;
+            });
+
+            // Update barre perso
+            const pct = (charChecked / char.tasks.length) * 100;
+            document.getElementById(`bar-${char.id}`).style.width = pct + '%';
+            
+            // Update Titre selon niveau
+            const lvlElement = document.getElementById(`lvl-${char.id}`);
+            if(pct === 100) lvlElement.innerText = "LVL MAX - LÉGENDAIRE";
+            else if(pct >= 60) lvlElement.innerText = "LVL 3 - EXPERTE";
+            else if(pct >= 20) lvlElement.innerText = "LVL 2 - AVANCÉE";
+            else lvlElement.innerText = "LVL 1 - DÉBUTANTE";
+
+            totalChecked += charChecked;
+            totalTasks += char.tasks.length;
+        });
+
+        // Update barre globale
+        const globalPct = Math.round((totalChecked / totalTasks) * 100);
+        document.getElementById('global-bar').style.width = globalPct + '%';
+        document.getElementById('global-val').innerText = globalPct;
+
+        // Status global
+        const statusText = document.getElementById('status-text');
+        if(globalPct > 80) statusText.innerText = "HÉROÏNE DE SA VIE";
+        else if(globalPct > 40) statusText.innerText = "AVENTURIÈRE";
+        else statusText.innerText = "NOVICE";
+
+        saveData();
+    }
+
+    // Sauvegarde & Chargement
+    function saveData() {
+        const states = {};
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            states[cb.id] = cb.checked;
+        });
+        localStorage.setItem('eliseQuestData', JSON.stringify(states));
+    }
+
+    function loadData() {
+        const data = JSON.parse(localStorage.getItem('eliseQuestData'));
+        if (data) {
+            for (const id in data) {
+                const cb = document.getElementById(id);
+                if (cb) cb.checked = data[id];
+            }
+        }
+    }
+
+    function updateCalendar() {
+        const end = new Date('2026-12-31');
+        const diff = end - new Date();
         const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-        document.getElementById('days-left').innerText = days > 0 ? days : 0;
-    </script>
+        document.getElementById('days').innerText = days > 0 ? days : 0;
+    }
+
+    init();
+</script>
 </body>
 </html>
