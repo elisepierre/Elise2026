@@ -21,18 +21,35 @@
         }
 
         /* HEADER */
+        /* Ajustement du Header pour laisser de la place au Streak */
         #header-status {
             width: 95%; max-width: 900px; border: 3px solid #30363d;
-            padding: 25px; text-align: center; background: var(--panel-color);
+            padding: 35px 25px 25px 25px; /* Augmentation du padding haut */
+            text-align: center; background: var(--panel-color);
             margin-bottom: 20px; border-radius: 12px; position: relative;
         }
-
+    
+        /* Repositionnement du Streak tout en haut à droite */
         .streak-aside {
-            position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
-            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            position: absolute; 
+            right: 15px; 
+            top: 10px; /* Fixé en haut */
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 2px;
         }
-        .streak-fire { font-size: 2rem; filter: drop-shadow(0 0 5px #ff9f43); }
-        .streak-val { font-size: 0.7rem; color: #ff9f43; }
+        
+        .streak-fire { 
+            font-size: 1.8rem; 
+            filter: drop-shadow(0 0 5px #ff9f43); 
+        }
+        
+        .streak-val { 
+            font-size: 0.6rem; 
+            color: #ff9f43; 
+            font-weight: bold;
+        }
 
         .progress-container {
             width: 100%; height: 28px; background: #000; border: 2px solid #30363d; 
@@ -96,8 +113,10 @@
             <div class="streak-fire">🔥</div>
             <div id="streak-count" class="streak-val">0</div>
         </div>
-
-        <div class="progress-container"><div id="global-bar" class="bar"></div></div>
+    
+        <div class="progress-container">
+            <div id="global-bar" class="bar"></div>
+        </div>
         <div style="font-size: 0.45rem; color: #8b949e;">PROGRESSION ANNUELLE : <span id="global-val">0</span>%</div>
     </div>
 
