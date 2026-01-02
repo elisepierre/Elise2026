@@ -143,20 +143,25 @@
             const done = cat.tasks.filter(t => t.d).length;
             const lvl = getLevel(done);
 
+            // --- LA CORRECTION EST ICI ---
+            const displayName = id === 'bienetre' ? 'BIEN-ÊTRE' : id.toUpperCase();
+
             const btn = document.createElement('button');
             btn.className = `menu-btn ${activeCat === id ? 'active' : ''}`;
             btn.style.backgroundColor = cat.color;
             btn.innerHTML = `
                 <span class="btn-icon">${cat.avatar}</span>
-                <span class="btn-text">${id.toUpperCase()} (LVL ${lvl})</span>
+                <span class="btn-text">${displayName} (LVL ${lvl})</span>
                 <span class="btn-stats">EN COURS: ${todo} | FINI: ${done}</span>
             `;
+            // -----------------------------
+
             btn.onclick = () => showCategory(id);
             menu.appendChild(btn);
         }
         updateGlobal();
     }
-
+    
     function checkStreak() {
         const today = new Date().toDateString();
         const yesterday = new Date();
