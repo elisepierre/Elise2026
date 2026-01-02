@@ -13,7 +13,6 @@
             --accent-color: #f85149;
             --text-color: #c9d1d9;
             --xp-color: #3fb950;
-            /* Couleurs vives mais lisibles */
             --culture: #1f6feb; --projets: #d29922; --etudes: #8957e5;
             --amour: #db61a2; --bienetre: #238636; --finance: #9e6a03;
         }
@@ -28,8 +27,16 @@
         #header-status {
             width: 95%; max-width: 900px; border: 3px solid #30363d;
             padding: 25px; text-align: center; background: var(--panel-color);
-            margin-bottom: 30px; border-radius: 12px;
+            margin-bottom: 30px; border-radius: 12px; position: relative;
         }
+
+        /* STACK STREAK ICON */
+        .streak-stack {
+            position: absolute; top: 10px; right: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: #ff9f43; font-size: 0.5rem;
+        }
+        .streak-stack span { font-size: 1.5rem; margin-bottom: 5px; }
 
         .progress-container {
             width: 100%; height: 28px; background: #000; border: 2px solid #30363d; 
@@ -40,7 +47,7 @@
 
         /* MENU BOUTONS MODERNES */
         .category-menu {
-            display: grid; grid-template-columns: repeat(2, 1fr); /* 2 colonnes pour plus d'espace */
+            display: grid; grid-template-columns: repeat(2, 1fr);
             gap: 15px; width: 95%; max-width: 900px; margin-bottom: 30px;
         }
 
@@ -96,6 +103,10 @@
 <body>
 
     <div id="header-status">
+        <div class="streak-stack">
+            <span id="streak-icon">🔥</span>
+            <div id="streak-count">0 JOURS</div>
+        </div>
         <h1 style="font-size: 1.1rem; margin-bottom: 20px; color: #fff;">ELISE QUEST 2026</h1>
         <div class="progress-container"><div id="global-bar" class="bar"></div></div>
         <div style="font-size: 0.45rem;">OBJECTIFS MONDIAUX : <span id="global-val">0</span>%</div>
@@ -110,24 +121,24 @@
     <audio id="lvlup-sound" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"></audio>
 
 <script>
-    // Nouvelle logique de niveaux demandée
-    const LEVELS = [0, 5, 15, 35, 85]; // Cumulatif : Lvl 1->2 (5), Lvl 2->3 (+10=15), Lvl 3->4 (+20=35), Lvl 4->5 (+50=85)
+    const LEVELS = [0, 5, 15, 35, 85];
 
-    let data = JSON.parse(localStorage.getItem('eliseQuest2026_Final_V4')) || {
+    let data = JSON.parse(localStorage.getItem('eliseQuest2026_Final_V5')) || {
         culture: { name: "Biblios", avatar: "📚", color: "var(--culture)", tasks: [] },
         projets: { name: "Nova", avatar: "🚀", color: "var(--projets)", tasks: [] },
         etudes: { name: "Astra", avatar: "🎓", color: "var(--etudes)", tasks: [] },
         amour: { name: "Lumina", avatar: "💖", color: "var(--amour)", tasks: [] },
         bienetre: { name: "Vita", avatar: "🧘‍♀️", color: "var(--bienetre)", tasks: [] },
-        finance: { name: "Aurum", avatar: "💰", color: "var(--finance)", tasks: [] }
+        finance: { name: "Aurum", avatar: "💰", color: "var(--finance)", tasks: [] },
+        streak: { count: 0, lastDate: null, lastCompletedDate: null }
     };
 
-    let activeCat = null;
-
     function init() {
+        checkStreak();
         const menu = document.getElementById('menu');
         menu.innerHTML = '';
         for (const [id, cat] of Object.entries(data)) {
+            if (id === 'streak') continue;
             const todo = cat.tasks.filter(t => !t.d).length;
             const done = cat.tasks.filter(t => t.d).length;
             const lvl = getLevel(done);
@@ -146,6 +157,30 @@
         updateGlobal();
     }
 
+    function checkStreak() {
+        const today = new Date().toDateString();
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toDateString();
+
+        // On vérifie si un objectif a été coché aujourd'hui dans n'importe quelle catégorie
+        let completedToday = false;
+        for (const id in data) {
+            if (data[id].tasks) {
+                // Pour cette logique simple, on regarde si la date du dernier check est aujourd'hui
+                if (data.streak.lastCompletedDate === today) completedToday = true;
+            }
+        }
+
+        // Si la dernière fois qu'on a complété quelque chose était avant-hier ou plus, la série se brise
+        if (data.streak.lastCompletedDate && data.streak.lastCompletedDate !== today && data.streak.lastCompletedDate !== yesterdayStr) {
+            data.streak.count = 0;
+        }
+
+        document.getElementById('streak-count').innerText = `${data.streak.count} JOURS`;
+        document.getElementById('streak-icon').style.opacity = data.streak.count > 0 ? "1" : "0.3";
+    }
+
     function getLevel(count) {
         if (count >= LEVELS[4]) return 5;
         if (count >= LEVELS[3]) return 4;
@@ -158,13 +193,13 @@
         const currentLvl = getLevel(count);
         const currentFloor = LEVELS[currentLvl - 1];
         const nextFloor = LEVELS[currentLvl] || 999;
-        
         const xpInLevel = count - currentFloor;
         const totalNeededInLevel = nextFloor - currentFloor;
         const pct = Math.min((xpInLevel / totalNeededInLevel) * 100, 100);
-        
         return { pct, xpInLevel, totalNeededInLevel, currentLvl };
     }
+
+    let activeCat = null;
 
     function showCategory(id) {
         activeCat = id;
@@ -175,7 +210,6 @@
         const cat = data[id];
         const doneCount = cat.tasks.filter(t => t.d).length;
         const xp = getXpProgress(doneCount);
-        
         const todoTasks = cat.tasks.filter(t => !t.d);
         const doneTasks = cat.tasks.filter(t => t.d);
 
@@ -187,24 +221,17 @@
                     <p style="font-size:0.5rem; margin-top:10px;">RANG : NIVEAU ${xp.currentLvl}</p>
                 </div>
             </div>
-
             <div style="font-size:0.4rem; color:#8b949e; margin-bottom:8px;">
                 XP POUR NIVEAU ${xp.currentLvl + 1} : ${xp.xpInLevel} / ${xp.totalNeededInLevel}
             </div>
             <div class="progress-container"><div class="bar" style="width:${xp.pct}%; background:${cat.color}"></div></div>
-
             <div class="add-zone">
                 <input type="text" id="new-task-input" placeholder="NOUVEL OBJECTIF..." onkeyup="if(event.key==='Enter') addTask()">
                 <button class="btn-add" style="background:${cat.color}; color:#fff" onclick="addTask()">OK</button>
             </div>
-
             <div class="section-title"><span>OBJECTIFS EN COURS</span> <span>(${todoTasks.length})</span></div>
             <ul class="task-list">${renderList(todoTasks, false)}</ul>
-
-            ${doneTasks.length > 0 ? `
-                <div class="section-title"><span>TERMINÉS</span> <span>(${doneTasks.length})</span></div>
-                <ul class="task-list">${renderList(doneTasks, true)}</ul>
-            ` : ''}
+            ${doneTasks.length > 0 ? `<div class="section-title"><span>TERMINÉS</span> <span>(${doneTasks.length})</span></div><ul class="task-list">${renderList(doneTasks, true)}</ul>` : ''}
         `;
         init(); 
     }
@@ -212,20 +239,30 @@
     function renderList(tasks, isDone) {
         return tasks.map(task => {
             const idx = data[activeCat].tasks.indexOf(task);
-            return `
-                <li class="task-item ${isDone ? 'done' : ''}">
-                    <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleTask(${idx})" style="transform: scale(1.5);">
-                    <span class="task-text">${task.t}</span>
-                    <span class="del-btn" onclick="deleteTask(${idx})">✖</span>
-                </li>
-            `;
+            return `<li class="task-item ${isDone ? 'done' : ''}">
+                <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleTask(${idx})" style="transform: scale(1.5);">
+                <span class="task-text">${task.t}</span>
+                <span class="del-btn" onclick="deleteTask(${idx})">✖</span>
+            </li>`;
         }).join('');
     }
 
     function toggleTask(index) {
+        const today = new Date().toDateString();
+        const alreadyDoneToday = (data.streak.lastCompletedDate === today);
+        
+        const wasDone = data[activeCat].tasks[index].d;
         const oldLvl = getLevel(data[activeCat].tasks.filter(t => t.d).length);
         data[activeCat].tasks[index].d = !data[activeCat].tasks[index].d;
         const newLvl = getLevel(data[activeCat].tasks.filter(t => t.d).length);
+
+        // Si on vient de cocher (pas décocher)
+        if (!wasDone && data[activeCat].tasks[index].d) {
+            if (!alreadyDoneToday) {
+                data.streak.count++;
+                data.streak.lastCompletedDate = today;
+            }
+        }
 
         if (newLvl > oldLvl) {
             document.getElementById('lvlup-sound').play();
@@ -262,8 +299,9 @@
     }
 
     function saveAndRefresh() {
-        localStorage.setItem('eliseQuest2026_Final_V4', JSON.stringify(data));
-        showCategory(activeCat);
+        localStorage.setItem('eliseQuest2026_Final_V5', JSON.stringify(data));
+        if(activeCat) showCategory(activeCat);
+        else init();
     }
 
     init();
