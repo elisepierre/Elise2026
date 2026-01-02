@@ -3,19 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elise Quest 2026 - Master</title>
+    <title>Elise Quest 2026 - Final Elite</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --bg-color: #0b0e14;
-            --panel-color: #161b22;
-            --accent-color: #f85149;
-            --text-color: #c9d1d9;
-            --xp-color: #3fb950;
+            --bg-color: #0b0e14; --panel-color: #161b22; --accent-color: #f85149;
+            --text-color: #c9d1d9; --xp-color: #3fb950; --quotidien: #fca311;
             --culture: #1f6feb; --projets: #d29922; --etudes: #8957e5;
             --amour: #db61a2; --bienetre: #238636; --finance: #9e6a03;
-            --quotidien: #fca311;
         }
 
         body {
@@ -24,99 +20,94 @@
             display: flex; flex-direction: column; align-items: center;
         }
 
+        /* HEADER & STREAK */
         #header-status {
             width: 95%; max-width: 900px; border: 3px solid #30363d;
             padding: 25px; text-align: center; background: var(--panel-color);
             margin-bottom: 20px; border-radius: 12px; position: relative;
         }
 
-        .streak-stack {
-            position: absolute; top: 10px; right: 20px;
-            display: flex; flex-direction: column; align-items: center;
-            color: #ff9f43; font-size: 0.5rem;
+        .streak-container {
+            display: flex; align-items: center; justify-content: center;
+            gap: 15px; color: #ff9f43; margin-bottom: 15px;
         }
+        .streak-fire { font-size: 2.5rem; text-shadow: 0 0 10px #ff9f43; }
+        .streak-info { text-align: left; }
 
-        /* --- CALENDRIER QUOTIDIEN --- */
-        #daily-hub {
-            width: 95%; max-width: 900px; background: #0d1117;
-            border: 3px solid var(--quotidien); padding: 15px;
-            border-radius: 12px; margin-bottom: 20px;
-        }
-
-        .calendar-grid {
-            display: flex; gap: 4px; overflow-x: auto; padding: 10px 0;
-            scrollbar-width: none;
-        }
-
-        .calendar-day {
-            min-width: 14px; height: 14px; background: #21262d; border-radius: 2px;
-            position: relative;
-        }
-
-        /* Couleurs du dégradé */
-        .day-lvl-1 { background: #0e4429; } /* Un peu fait */
-        .day-lvl-2 { background: #006d32; } /* Moyen fait */
-        .day-lvl-3 { background: #26a641; } /* Bien fait */
-        .day-lvl-4 { background: #39d353; box-shadow: 0 0 5px #39d353; } /* Parfait ! */
-
-        /* --- RESTE DU DESIGN --- */
         .progress-container {
             width: 100%; height: 28px; background: #000; border: 2px solid #30363d; 
-            margin: 15px 0; border-radius: 6px; overflow: hidden;
+            margin: 10px 0; border-radius: 6px; overflow: hidden;
         }
         .bar { height: 100%; background: var(--xp-color); width: 0%; transition: width 0.5s ease; }
 
-        .category-menu {
-            display: grid; grid-template-columns: repeat(2, 1fr);
-            gap: 12px; width: 95%; max-width: 900px; margin-bottom: 20px;
+        /* CALENDRIER QUOTIDIEN */
+        #daily-hub {
+            width: 95%; max-width: 900px; background: #0d1117;
+            border: 3px solid var(--quotidien); padding: 20px;
+            border-radius: 12px; margin-bottom: 20px;
         }
-        @media (min-width: 600px) { .category-menu { grid-template-columns: repeat(3, 1fr); } }
+        .calendar-grid { display: flex; gap: 5px; overflow-x: auto; padding: 10px 0; }
+        .calendar-day { min-width: 18px; height: 18px; background: #21262d; border-radius: 3px; }
+        .day-lvl-1 { background: #0e4429; } .day-lvl-2 { background: #006d32; }
+        .day-lvl-3 { background: #26a641; } .day-lvl-4 { background: #39d353; box-shadow: 0 0 8px #39d353; }
 
+        /* MENU CATEGORIES */
+        .category-menu {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px; width: 95%; max-width: 900px; margin-bottom: 20px;
+        }
         .menu-btn {
             color: #fff; border: none; font-family: 'Press Start 2P', cursive; 
-            padding: 15px 5px; cursor: pointer; border-radius: 8px;
-            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            padding: 20px; cursor: pointer; border-radius: 10px;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.4); transition: 0.2s;
         }
-        .menu-btn .btn-icon { font-size: 1.8rem; }
-        .menu-btn .btn-text { font-size: 0.45rem; }
+        .menu-btn:hover { transform: translateY(-3px); }
 
+        /* ACTIVE ZONE */
         #active-quest-zone {
             width: 95%; max-width: 900px; border: 3px solid #30363d;
-            background: var(--panel-color); padding: 25px; display: none;
-            border-radius: 12px; box-sizing: border-box; margin-top: 10px;
+            background: var(--panel-color); padding: 30px; display: none;
+            border-radius: 12px; margin-top: 10px;
         }
 
+        .section-title { font-size: 0.55rem; color: #8b949e; margin: 30px 0 15px 0; display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding-bottom: 10px; }
         .task-item {
-            display: flex; align-items: center; gap: 12px;
-            background: #0d1117; margin-bottom: 10px; padding: 12px;
-            border-radius: 8px; border: 1px solid #30363d;
+            display: flex; align-items: center; gap: 15px; background: #0d1117;
+            margin-bottom: 10px; padding: 15px; border-radius: 8px; border: 1px solid #30363d;
         }
-        .task-text { flex-grow: 1; font-size: 0.45rem; line-height: 1.4; }
-        .task-item.done { border-color: var(--xp-color); opacity: 0.6; }
-        .del-btn { color: var(--accent-color); cursor: pointer; font-size: 0.6rem; }
-
+        .task-text { flex-grow: 1; font-size: 0.5rem; line-height: 1.5; }
+        .task-item.done { border-color: var(--xp-color); opacity: 0.5; }
+        
+        .add-zone { display: flex; gap: 10px; margin: 20px 0; }
         input[type="text"] {
-            flex-grow: 1; background: #000; border: 2px solid #30363d;
-            color: #fff; padding: 12px; font-family: 'Press Start 2P'; font-size: 0.5rem;
+            flex-grow: 1; background: #000; border: 2px solid #333;
+            color: #fff; padding: 15px; font-family: 'Press Start 2P'; font-size: 0.5rem;
         }
-        .btn-add { background: var(--xp-color); border: none; padding: 10px 15px; cursor: pointer; font-family: 'Press Start 2P'; font-size: 0.5rem; }
+        .btn-add { background: var(--xp-color); border: none; padding: 15px; cursor: pointer; font-family: 'Press Start 2P'; font-size: 0.6rem; color: #000; }
     </style>
 </head>
 <body>
 
     <div id="header-status">
-        <div class="streak-stack"><span>🔥</span><div id="streak-count">0</div></div>
-        <h1 style="font-size: 1rem; color: #fff;">ELISE QUEST 2026</h1>
+        <div class="streak-container">
+            <div class="streak-fire">🔥</div>
+            <div class="streak-info">
+                <div id="streak-count" style="font-size: 1.2rem;">0</div>
+                <div style="font-size: 0.4rem;">JOURS DE COMBO</div>
+            </div>
+        </div>
         <div class="progress-container"><div id="global-bar" class="bar"></div></div>
-        <div style="font-size: 0.4rem;">PROGRESSION GLOBALE : <span id="global-val">0</span>%</div>
+        <div style="font-size: 0.45rem; color: #8b949e;">COMPLÉTION GLOBALE 2026 : <span id="global-val">0</span>%</div>
     </div>
 
     <div id="daily-hub">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <span style="font-size: 0.5rem; color: var(--quotidien);">⚡ ROUTINE QUOTIDIENNE</span>
-            <button onclick="showCategory('quotidien')" style="background: var(--quotidien); border:none; padding: 5px; font-family: 'Press Start 2P'; font-size: 0.4rem; cursor:pointer;">OUVRIR</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <span style="font-size: 0.6rem; color: var(--quotidien);">⚡ ROUTINE QUOTIDIENNE</span>
+            <button onclick="showCategory('quotidien')" style="background: var(--quotidien); border:none; padding: 10px; font-family: 'Press Start 2P'; font-size: 0.45rem; cursor:pointer; border-radius:5px;">GERER ROUTINE</button>
         </div>
         <div class="calendar-grid" id="calendar"></div>
+        <div style="font-size: 0.35rem; color: #555; text-align: center;">(Historique des 30 derniers jours)</div>
     </div>
 
     <div class="category-menu" id="menu"></div>
@@ -129,8 +120,7 @@
 
 <script>
     const LEVELS = [0, 5, 15, 35, 85];
-
-    let data = JSON.parse(localStorage.getItem('eliseQuest2026_V7')) || {
+    let data = JSON.parse(localStorage.getItem('eliseQuest2026_V8')) || {
         quotidien: { name: "Routine", avatar: "⚡", color: "var(--quotidien)", tasks: [] },
         culture: { name: "Biblios", avatar: "📚", color: "var(--culture)", tasks: [] },
         projets: { name: "Nova", avatar: "🚀", color: "var(--projets)", tasks: [] },
@@ -139,8 +129,10 @@
         bienetre: { name: "Vita", avatar: "🧘‍♀️", color: "var(--bienetre)", tasks: [] },
         finance: { name: "Aurum", avatar: "💰", color: "var(--finance)", tasks: [] },
         streak: { count: 0, lastDate: null, lastCompletedDate: null },
-        history: {} // Pour le calendrier : { "dateString": %completion }
+        history: {}
     };
+
+    let activeCat = null;
 
     function init() {
         checkDailyReset();
@@ -148,41 +140,23 @@
         const menu = document.getElementById('menu');
         menu.innerHTML = '';
         for (const [id, cat] of Object.entries(data)) {
-            if (id === 'streak' || id === 'history' || id === 'quotidien') continue;
+            if (['streak', 'history', 'quotidien'].includes(id)) continue;
             const done = cat.tasks.filter(t => t.d).length;
+            const todo = cat.tasks.filter(t => !t.d).length;
             const lvl = getLevel(done);
             const btn = document.createElement('button');
             btn.className = `menu-btn ${activeCat === id ? 'active' : ''}`;
             btn.style.backgroundColor = cat.color;
             btn.innerHTML = `
-                <span class="btn-icon">${cat.avatar}</span>
-                <span class="btn-text">${id === 'bienetre' ? 'BIEN-ÊTRE' : id.toUpperCase()}</span>
-                <span style="font-size:0.35rem; opacity:0.8;">LVL ${lvl}</span>
+                <span style="font-size:2rem;">${cat.avatar}</span>
+                <span style="font-size:0.55rem;">${id === 'bienetre' ? 'BIEN-ÊTRE' : id.toUpperCase()}</span>
+                <span style="font-size:0.4rem; background:rgba(0,0,0,0.2); padding:5px; border-radius:4px;">LVL ${lvl} | FINI: ${done}</span>
             `;
             btn.onclick = () => showCategory(id);
             menu.appendChild(btn);
         }
         updateGlobal();
         document.getElementById('streak-count').innerText = data.streak.count;
-    }
-
-    function renderCalendar() {
-        const cal = document.getElementById('calendar');
-        cal.innerHTML = '';
-        const today = new Date();
-        // Affiche les 30 derniers jours
-        for (let i = 29; i >= 0; i--) {
-            const d = new Date();
-            d.setDate(today.getDate() - i);
-            const dateStr = d.toDateString();
-            const score = data.history[dateStr] || 0;
-            
-            const dayDiv = document.createElement('div');
-            dayDiv.className = 'calendar-day';
-            if (score > 0) dayDiv.classList.add(score > 75 ? 'day-lvl-4' : score > 50 ? 'day-lvl-3' : score > 25 ? 'day-lvl-2' : 'day-lvl-1');
-            dayDiv.title = `${dateStr} : ${score}%`;
-            cal.appendChild(dayDiv);
-        }
     }
 
     function checkDailyReset() {
@@ -194,6 +168,20 @@
         }
     }
 
+    function renderCalendar() {
+        const cal = document.getElementById('calendar'); cal.innerHTML = '';
+        const today = new Date();
+        for (let i = 29; i >= 0; i--) {
+            const d = new Date(); d.setDate(today.getDate() - i);
+            const dateStr = d.toDateString();
+            const score = data.history[dateStr] || 0;
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'calendar-day';
+            if (score > 0) dayDiv.classList.add(score > 75 ? 'day-lvl-4' : score > 50 ? 'day-lvl-3' : score > 25 ? 'day-lvl-2' : 'day-lvl-1');
+            cal.appendChild(dayDiv);
+        }
+    }
+
     function getLevel(count) {
         if (count >= LEVELS[4]) return 5;
         if (count >= LEVELS[3]) return 4;
@@ -202,39 +190,45 @@
         return 1;
     }
 
-    let activeCat = null;
     function showCategory(id) {
         activeCat = id;
         const zone = document.getElementById('active-quest-zone');
         zone.style.display = 'block';
         const cat = data[id];
-        const doneCount = cat.tasks.filter(t => t.d).length;
-        const xp = ((doneCount - LEVELS[getLevel(doneCount)-1]) / ((LEVELS[getLevel(doneCount)] || 100) - LEVELS[getLevel(doneCount)-1])) * 100;
+        const doneTasks = cat.tasks.filter(t => t.d);
+        const todoTasks = cat.tasks.filter(t => !t.d);
+        const xp = ((doneTasks.length - LEVELS[getLevel(doneTasks.length)-1]) / ((LEVELS[getLevel(doneTasks.length)] || 100) - LEVELS[getLevel(doneTasks.length)-1])) * 100;
 
         document.getElementById('quest-content').innerHTML = `
-            <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
-                <span style="font-size:3rem;">${cat.avatar}</span>
+            <div style="display:flex; align-items:center; gap:20px; margin-bottom:20px;">
+                <span style="font-size:3.5rem;">${cat.avatar}</span>
                 <div>
-                    <h2 style="font-size:0.8rem; margin:0; color:${cat.color}">${id === 'bienetre' ? 'BIEN-ÊTRE' : id.toUpperCase()}</h2>
-                    <p style="font-size:0.4rem;">NIVEAU ${getLevel(doneCount)}</p>
+                    <h2 style="font-size:1rem; margin:0; color:${cat.color}">${id === 'bienetre' ? 'BIEN-ÊTRE' : id.toUpperCase()}</h2>
+                    <p style="font-size:0.5rem;">RANG : NIVEAU ${getLevel(doneTasks.length)}</p>
                 </div>
             </div>
             <div class="progress-container"><div class="bar" style="width:${xp}%; background:${cat.color}"></div></div>
             <div class="add-zone">
-                <input type="text" id="new-task-input" placeholder="OBJECTIF..." onkeyup="if(event.key==='Enter') addTask()">
-                <button class="btn-add" style="background:${cat.color}; color:#fff" onclick="addTask()">OK</button>
+                <input type="text" id="new-task-input" placeholder="QUÊTE..." onkeyup="if(event.key==='Enter') addTask()">
+                <button class="btn-add" style="background:${cat.color}" onclick="addTask()">AJOUTER</button>
             </div>
-            <ul class="task-list">
-                ${cat.tasks.map((t, i) => `
-                    <li class="task-item ${t.d ? 'done' : ''}">
-                        <input type="checkbox" ${t.d ? 'checked' : ''} onchange="toggleTask(${data[id].tasks.indexOf(t)})">
-                        <span class="task-text">${t.t}</span>
-                        <span class="del-btn" onclick="deleteTask(${data[id].tasks.indexOf(t)})">✖</span>
-                    </li>
-                `).join('')}
-            </ul>
+            <div class="section-title"><span>EN COURS (${todoTasks.length})</span></div>
+            <ul class="task-list">${renderTaskList(todoTasks, false)}</ul>
+            <div class="section-title"><span>ACCOMPLI (${doneTasks.length})</span></div>
+            <ul class="task-list">${renderTaskList(doneTasks, true)}</ul>
         `;
         init();
+    }
+
+    function renderTaskList(tasks, isDone) {
+        return tasks.map(t => {
+            const idx = data[activeCat].tasks.indexOf(t);
+            return `<li class="task-item ${isDone ? 'done' : ''}">
+                <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleTask(${idx})" style="transform: scale(1.6);">
+                <span class="task-text">${t.t}</span>
+                <span style="color:red; cursor:pointer" onclick="deleteTask(${idx})">✖</span>
+            </li>`;
+        }).join('');
     }
 
     function toggleTask(idx) {
@@ -251,7 +245,6 @@
             data.streak.count++;
             data.streak.lastCompletedDate = today;
         }
-
         saveAndRefresh();
     }
 
@@ -269,9 +262,8 @@
         document.getElementById('global-val').innerText = Math.round(t===0?0:(d/t)*100);
     }
 
-    function save() { localStorage.setItem('eliseQuest2026_V7', JSON.stringify(data)); }
+    function save() { localStorage.setItem('eliseQuest2026_V8', JSON.stringify(data)); }
     function saveAndRefresh() { save(); showCategory(activeCat); }
-
     init();
 </script>
 </body>
