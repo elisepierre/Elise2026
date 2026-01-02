@@ -3,97 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elise Quest 2026</title>
+    <title>Elise Quest 2026 - Ultimate</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --bg-color: #0d0221;
-            --panel-color: #1a0b2e;
-            --accent-color: #ff3864;
-            --text-color: #ffffff;
-            --xp-color: #00f5d4;
-            --culture: #2d8b84; --projets: #b36200; --etudes: #5d54a4;
-            --amour: #b33939; --bienetre: #218c74; --finance: #8a7b10;
+            --bg-color: #0b0e14;
+            --panel-color: #161b22;
+            --accent-color: #f85149;
+            --text-color: #c9d1d9;
+            --xp-color: #3fb950;
+            /* Couleurs vives mais lisibles */
+            --culture: #1f6feb; --projets: #d29922; --etudes: #8957e5;
+            --amour: #db61a2; --bienetre: #238636; --finance: #9e6a03;
         }
 
         body {
             background-color: var(--bg-color); color: var(--text-color);
-            font-family: 'Press Start 2P', cursive; margin: 0; padding: 20px;
+            font-family: 'Press Start 2P', cursive; margin: 0; padding: 10px;
             display: flex; flex-direction: column; align-items: center;
         }
 
-        /* STATS BAR */
+        /* HEADER */
         #header-status {
-            width: 95%; max-width: 800px; border: 4px solid #fff;
-            padding: 20px; text-align: center; background: var(--panel-color);
-            margin-bottom: 20px; box-shadow: 6px 6px 0px var(--accent-color);
+            width: 95%; max-width: 900px; border: 3px solid #30363d;
+            padding: 25px; text-align: center; background: var(--panel-color);
+            margin-bottom: 30px; border-radius: 12px;
         }
 
-        .streak-fire { color: #ff9f43; font-size: 0.8rem; margin-top: 10px; }
-
-        /* XP BARS */
         .progress-container {
-            width: 100%; height: 24px; background: #000; border: 2px solid #fff; 
-            margin: 15px 0; position: relative;
+            width: 100%; height: 28px; background: #000; border: 2px solid #30363d; 
+            margin: 15px 0; border-radius: 6px; overflow: hidden;
         }
 
-        .bar { height: 100%; background: var(--xp-color); width: 0%; transition: width 0.5s ease-out; }
+        .bar { height: 100%; background: var(--xp-color); width: 0%; transition: width 0.5s ease; }
 
-        /* MENU BUTTONS */
+        /* MENU BOUTONS MODERNES */
         .category-menu {
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 12px; width: 95%; max-width: 800px; margin-bottom: 20px;
+            display: grid; grid-template-columns: repeat(2, 1fr); /* 2 colonnes pour plus d'espace */
+            gap: 15px; width: 95%; max-width: 900px; margin-bottom: 30px;
         }
+
+        @media (min-width: 600px) { .category-menu { grid-template-columns: repeat(3, 1fr); } }
 
         .menu-btn {
-            color: #fff; border: 3px solid #fff; font-family: 'Press Start 2P', cursive; 
-            font-size: 0.4rem; padding: 15px 5px; cursor: pointer; transition: 0.2s;
-            text-shadow: 2px 2px 0px #000;
+            color: #fff; border: none; font-family: 'Press Start 2P', cursive; 
+            padding: 20px 10px; cursor: pointer; transition: all 0.2s ease;
+            border-radius: 10px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 12px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.3);
         }
 
-        .menu-btn.active { transform: scale(1.05); border-color: var(--xp-color); box-shadow: 0 0 15px var(--xp-color); }
+        .menu-btn .btn-icon { font-size: 2.2rem; }
+        .menu-btn .btn-text { font-size: 0.55rem; letter-spacing: 1px; }
+        .menu-btn .btn-stats { font-size: 0.4rem; opacity: 0.9; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px; }
 
-        /* ACTIVE ZONE */
+        .menu-btn:hover { transform: translateY(-3px); filter: brightness(1.1); }
+        .menu-btn.active { outline: 3px solid #fff; outline-offset: 2px; transform: scale(1.02); }
+
+        /* ZONE ACTIVE */
         #active-quest-zone {
-            width: 95%; max-width: 800px; border: 4px solid #fff;
-            background: var(--panel-color); padding: 25px; display: none;
-            box-sizing: border-box; animation: slideIn 0.3s ease-out;
+            width: 95%; max-width: 900px; border: 3px solid #30363d;
+            background: var(--panel-color); padding: 30px; display: none;
+            border-radius: 12px; box-sizing: border-box;
         }
 
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .char-info-top { display: flex; align-items: center; gap: 20px; margin-bottom: 25px; }
+        .avatar-large { font-size: 4rem; }
 
-        .title-badge { font-size: 0.45rem; color: var(--xp-color); margin-top: 5px; text-transform: uppercase; }
-
-        /* TASKS */
-        h4 { font-size: 0.5rem; color: #aaa; margin-top: 30px; border-bottom: 1px solid #444; padding-bottom: 5px; }
-        .task-list { list-style: none; padding: 0; }
+        /* LISTES */
+        .section-title { font-size: 0.55rem; color: #8b949e; margin: 35px 0 15px 0; display: flex; justify-content: space-between; }
         .task-item {
-            display: flex; align-items: center; gap: 12px;
-            background: rgba(0,0,0,0.4); margin-bottom: 10px; padding: 12px;
-            border: 1px solid #333; transition: 0.3s;
+            display: flex; align-items: center; gap: 15px;
+            background: #0d1117; margin-bottom: 12px; padding: 15px;
+            border-radius: 8px; border: 1px solid #30363d;
         }
 
-        .task-item.done { border-color: var(--xp-color); background: rgba(0, 245, 212, 0.05); }
-        .task-text { flex-grow: 1; font-size: 0.45rem; line-height: 1.6; }
-        .del-icon { cursor: pointer; color: var(--accent-color); font-size: 0.6rem; opacity: 0.5; }
-        .del-icon:hover { opacity: 1; }
-
+        .task-text { flex-grow: 1; font-size: 0.5rem; line-height: 1.6; }
+        .task-item.done { border-color: var(--xp-color); opacity: 0.6; }
+        
+        /* INPUT */
+        .add-zone { display: flex; gap: 10px; margin-top: 20px; }
         input[type="text"] {
-            flex-grow: 1; background: #000; border: 2px solid #fff;
-            color: #fff; padding: 12px; font-family: 'Press Start 2P'; font-size: 0.5rem;
+            flex-grow: 1; background: #000; border: 2px solid #30363d;
+            color: #fff; padding: 15px; font-family: 'Press Start 2P'; font-size: 0.5rem; border-radius: 8px;
         }
-        .btn-add { background: var(--xp-color); color: #000; border: none; padding: 10px; cursor: pointer; font-family: 'Press Start 2P'; font-size: 0.5rem; }
+        .btn-add { background: var(--xp-color); color: #000; border: none; padding: 0 20px; border-radius: 8px; cursor: pointer; font-family: 'Press Start 2P'; font-size: 0.6rem; }
 
+        .del-btn { color: var(--accent-color); cursor: pointer; font-size: 0.7rem; margin-left: 10px; }
     </style>
 </head>
 <body>
 
     <div id="header-status">
-        <h1 style="font-size: 1rem;">ELISE QUEST 2026</h1>
+        <h1 style="font-size: 1.1rem; margin-bottom: 20px; color: #fff;">ELISE QUEST 2026</h1>
         <div class="progress-container"><div id="global-bar" class="bar"></div></div>
-        <div style="font-size: 0.4rem;">COMPLÉTION ANNUELLE : <span id="global-val">0</span>%</div>
-        <div class="streak-fire" id="streak-display">🔥 JOURS ACTIFS : 1</div>
+        <div style="font-size: 0.45rem;">OBJECTIFS MONDIAUX : <span id="global-val">0</span>%</div>
     </div>
 
     <div class="category-menu" id="menu"></div>
@@ -105,70 +110,60 @@
     <audio id="lvlup-sound" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"></audio>
 
 <script>
-    const LEVELS = [0, 5, 10, 20, 50, 100];
-    const TITLES = {
-        culture: ["Rat de bibliothèque", "Curieuse", "Érudite", "Oracle du Savoir"],
-        projets: ["Rêveuse", "Bâtisseuse", "Architecte", "Visionnaire"],
-        etudes: ["Apprentie", "Major de Promo", "Sage", "Maître Absolu"],
-        amour: ["Cœur d'artichaut", "Partenaire Or", "Muse de l'Amour", "Âme Sœur Éternelle"],
-        bienetre: ["Zen", "Athlète", "Force de la Nature", "Éveillée"],
-        finance: ["Économe", "Trésorière", "Magnat", "Reine de la Fortune"]
-    };
+    // Nouvelle logique de niveaux demandée
+    const LEVELS = [0, 5, 15, 35, 85]; // Cumulatif : Lvl 1->2 (5), Lvl 2->3 (+10=15), Lvl 3->4 (+20=35), Lvl 4->5 (+50=85)
 
-    let data = JSON.parse(localStorage.getItem('eliseQuest2026_VFinal')) || {
+    let data = JSON.parse(localStorage.getItem('eliseQuest2026_Final_V4')) || {
         culture: { name: "Biblios", avatar: "📚", color: "var(--culture)", tasks: [] },
         projets: { name: "Nova", avatar: "🚀", color: "var(--projets)", tasks: [] },
         etudes: { name: "Astra", avatar: "🎓", color: "var(--etudes)", tasks: [] },
         amour: { name: "Lumina", avatar: "💖", color: "var(--amour)", tasks: [] },
         bienetre: { name: "Vita", avatar: "🧘‍♀️", color: "var(--bienetre)", tasks: [] },
-        finance: { name: "Aurum", avatar: "💰", color: "var(--finance)", tasks: [] },
-        lastActive: null,
-        streak: 0
+        finance: { name: "Aurum", avatar: "💰", color: "var(--finance)", tasks: [] }
     };
 
     let activeCat = null;
 
     function init() {
-        updateStreak();
         const menu = document.getElementById('menu');
         menu.innerHTML = '';
         for (const [id, cat] of Object.entries(data)) {
-            if(id === 'streak' || id === 'lastActive') continue;
-            const doneCount = cat.tasks.filter(t => t.d).length;
-            const lvl = getLevel(doneCount);
+            const todo = cat.tasks.filter(t => !t.d).length;
+            const done = cat.tasks.filter(t => t.d).length;
+            const lvl = getLevel(done);
+
             const btn = document.createElement('button');
             btn.className = `menu-btn ${activeCat === id ? 'active' : ''}`;
             btn.style.backgroundColor = cat.color;
-            btn.innerHTML = `${cat.avatar}<br>${id.toUpperCase()}<br>LVL ${lvl}`;
+            btn.innerHTML = `
+                <span class="btn-icon">${cat.avatar}</span>
+                <span class="btn-text">${id.toUpperCase()} (LVL ${lvl})</span>
+                <span class="btn-stats">EN COURS: ${todo} | FINI: ${done}</span>
+            `;
             btn.onclick = () => showCategory(id);
             menu.appendChild(btn);
         }
         updateGlobal();
     }
 
-    function updateStreak() {
-        const today = new Date().toDateString();
-        if (data.lastActive !== today) {
-            data.streak++;
-            data.lastActive = today;
-            save();
-        }
-        document.getElementById('streak-display').innerText = `🔥 COMBO : ${data.streak} JOURS`;
-    }
-
     function getLevel(count) {
-        for (let i = LEVELS.length - 1; i >= 0; i--) {
-            if (count >= LEVELS[i]) return i + 1;
-        }
+        if (count >= LEVELS[4]) return 5;
+        if (count >= LEVELS[3]) return 4;
+        if (count >= LEVELS[2]) return 3;
+        if (count >= LEVELS[1]) return 2;
         return 1;
     }
 
     function getXpProgress(count) {
         const currentLvl = getLevel(count);
         const currentFloor = LEVELS[currentLvl - 1];
-        const nextFloor = LEVELS[currentLvl] || 100;
-        const pct = ((count - currentFloor) / (nextFloor - currentFloor)) * 100;
-        return { pct, currentLvl, xpInLevel: count - currentFloor, totalInLevel: nextFloor - currentFloor };
+        const nextFloor = LEVELS[currentLvl] || 999;
+        
+        const xpInLevel = count - currentFloor;
+        const totalNeededInLevel = nextFloor - currentFloor;
+        const pct = Math.min((xpInLevel / totalNeededInLevel) * 100, 100);
+        
+        return { pct, xpInLevel, totalNeededInLevel, currentLvl };
     }
 
     function showCategory(id) {
@@ -180,32 +175,38 @@
         const cat = data[id];
         const doneCount = cat.tasks.filter(t => t.d).length;
         const xp = getXpProgress(doneCount);
-        const titleIndex = Math.min(xp.currentLvl - 1, TITLES[id].length - 1);
+        
+        const todoTasks = cat.tasks.filter(t => !t.d);
+        const doneTasks = cat.tasks.filter(t => t.d);
 
         document.getElementById('quest-content').innerHTML = `
-            <div class="char-header">
-                <div class="avatar">${cat.avatar}</div>
+            <div class="char-info-top">
+                <div class="avatar-large">${cat.avatar}</div>
                 <div>
-                    <h2 style="font-size:0.8rem; margin:0; color:${cat.color}">${cat.name}</h2>
-                    <div class="title-badge">TITRE : ${TITLES[id][titleIndex]}</div>
-                    <p style="font-size:0.4rem; margin-top:8px;">LVL ${xp.currentLvl}</p>
+                    <h2 style="font-size:0.9rem; margin:0; color:${cat.color}">${cat.name}</h2>
+                    <p style="font-size:0.5rem; margin-top:10px;">RANG : NIVEAU ${xp.currentLvl}</p>
                 </div>
             </div>
 
-            <div style="font-size:0.35rem; margin-bottom:5px; color:#aaa;">XP NIVEAU SUIVANT : ${xp.xpInLevel} / ${xp.totalInLevel}</div>
+            <div style="font-size:0.4rem; color:#8b949e; margin-bottom:8px;">
+                XP POUR NIVEAU ${xp.currentLvl + 1} : ${xp.xpInLevel} / ${xp.totalNeededInLevel}
+            </div>
             <div class="progress-container"><div class="bar" style="width:${xp.pct}%; background:${cat.color}"></div></div>
 
-            <div style="display:flex; gap:10px; margin: 20px 0;">
-                <input type="text" id="new-task-input" placeholder="AJOUTER UNE QUÊTE..." onkeyup="if(event.key==='Enter') addTask()">
+            <div class="add-zone">
+                <input type="text" id="new-task-input" placeholder="NOUVEL OBJECTIF..." onkeyup="if(event.key==='Enter') addTask()">
                 <button class="btn-add" style="background:${cat.color}; color:#fff" onclick="addTask()">OK</button>
             </div>
 
-            <h4>QUÊTES ACTIVES</h4>
-            <ul class="task-list">${renderList(cat.tasks.filter(t => !t.d), false)}</ul>
-            <h4>QUÊTES TERMINÉES</h4>
-            <ul class="task-list">${renderList(cat.tasks.filter(t => t.d), true)}</ul>
+            <div class="section-title"><span>OBJECTIFS EN COURS</span> <span>(${todoTasks.length})</span></div>
+            <ul class="task-list">${renderList(todoTasks, false)}</ul>
+
+            ${doneTasks.length > 0 ? `
+                <div class="section-title"><span>TERMINÉS</span> <span>(${doneTasks.length})</span></div>
+                <ul class="task-list">${renderList(doneTasks, true)}</ul>
+            ` : ''}
         `;
-        init();
+        init(); 
     }
 
     function renderList(tasks, isDone) {
@@ -213,9 +214,9 @@
             const idx = data[activeCat].tasks.indexOf(task);
             return `
                 <li class="task-item ${isDone ? 'done' : ''}">
-                    <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleTask(${idx})">
+                    <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleTask(${idx})" style="transform: scale(1.5);">
                     <span class="task-text">${task.t}</span>
-                    <span class="del-icon" onclick="deleteTask(${idx})">SUPPR.</span>
+                    <span class="del-btn" onclick="deleteTask(${idx})">✖</span>
                 </li>
             `;
         }).join('');
@@ -228,7 +229,7 @@
 
         if (newLvl > oldLvl) {
             document.getElementById('lvlup-sound').play();
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            confetti({ particleCount: 200, spread: 80, origin: { y: 0.7 } });
         }
         saveAndRefresh();
     }
@@ -260,8 +261,10 @@
         document.getElementById('global-val').innerText = pct;
     }
 
-    function save() { localStorage.setItem('eliseQuest2026_VFinal', JSON.stringify(data)); }
-    function saveAndRefresh() { save(); showCategory(activeCat); }
+    function saveAndRefresh() {
+        localStorage.setItem('eliseQuest2026_Final_V4', JSON.stringify(data));
+        showCategory(activeCat);
+    }
 
     init();
 </script>
