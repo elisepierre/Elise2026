@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elise Quest 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #1a1a2e;
+            --panel-color: #16213e;
+            --accent-color: #e94560;
+            --text-color: #fff;
+            --xp-color: #4ecca3;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Press Start 2P', cursive;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- Page de Garde --- */
+        #hero-section {
+            text-align: center;
+            border: 4px solid var(--accent-color);
+            padding: 20px;
+            width: 90%;
+            max-width: 800px;
+            margin-bottom: 30px;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .main-title {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            text-shadow: 3px 3px #000;
+        }
+
+        .global-progress-container {
+            width: 100%;
+            height: 30px;
+            background: #333;
+            border: 2px solid #fff;
+            margin: 20px 0;
+        }
+
+        #global-bar {
+            width: 45%; /* Dynamique */
+            height: 100%;
+            background: var(--xp-color);
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* --- Grille des Personnages --- */
+        .char-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .char-card {
+            background: var(--panel-color);
+            border: 3px solid #444;
+            padding: 15px;
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+
+        .char-card:hover {
+            transform: scale(1.02);
+            border-color: var(--accent-color);
+        }
+
+        .char-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            background: #555;
+            border: 2px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .char-info h3 { font-size: 0.8rem; margin: 0; }
+        .level-badge { font-size: 0.6rem; color: var(--xp-color); }
+
+        /* --- Liste de tâches --- */
+        .task-list {
+            list-style: none;
+            padding: 0;
+            font-size: 0.6rem;
+        }
+
+        .task-item {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="checkbox"] {
+            cursor: pointer;
+            accent-color: var(--xp-color);
+        }
+
+        .motivation-quote {
+            font-size: 0.5rem;
+            font-style: italic;
+            margin-top: 15px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="hero-section">
+        <h1 class="main-title">ELISE QUEST : 2026</h1>
+        <p>Progression Globale : <span id="global-pct">45</span>%</p>
+        <div class="global-progress-container">
+            <div id="global-bar" style="width: 45%;"></div>
+        </div>
+        <div style="font-size: 0.7rem;">
+            📅 Jours restants : <span id="days-left">363</span> | ⚡ État : En forme
+        </div>
+    </div>
+
+    <div class="char-grid">
+        <div class="char-card">
+            <div class="char-header">
+                <div class="avatar">📚</div>
+                <div class="char-info">
+                    <h3>Biblios l'Érudite</h3>
+                    <div class="level-badge">LVL 5 - Archiviste</div>
+                </div>
+            </div>
+            <ul class="task-list">
+                <li class="task-item"><input type="checkbox"> Lire 24 livres</li>
+                <li class="task-item"><input type="checkbox"> 1 expo par mois</li>
+            </ul>
+            <div class="motivation-quote">"La connaissance est l'arme la plus puissante."</div>
+        </div>
+
+        <div class="char-card">
+            <div class="char-header">
+                <div class="avatar">🚀</div>
+                <div class="char-info">
+                    <h3>Nova l'Architecte</h3>
+                    <div class="level-badge">LVL 2 - Apprentie</div>
+                </div>
+            </div>
+            <ul class="task-list">
+                <li class="task-item"><input type="checkbox"> Roadtrip Japon</li>
+                <li class="task-item"><input type="checkbox"> Apprendre React.js</li>
+            </ul>
+        </div>
+
+        <div class="char-card">
+            <div class="char-header">
+                <div class="avatar">🎓</div>
+                <div class="char-info">
+                    <h3>Astra la Sage</h3>
+                    <div class="level-badge">LVL 8 - Major</div>
+                </div>
+            </div>
+            <ul class="task-list">
+                <li class="task-item"><input type="checkbox"> Valider Semestre 1</li>
+                <li class="task-item"><input type="checkbox"> Stage trouvé</li>
+            </ul>
+        </div>
+
+        <div class="char-card">
+            <div class="char-header">
+                <div class="avatar">💖</div>
+                <div class="char-info">
+                    <h3>Lumina l'Harmonieuse</h3>
+                    <div class="level-badge">LVL 12 - Duo Fusionnel</div>
+                </div>
+            </div>
+            <ul class="task-list">
+                <li class="task-item"><input type="checkbox"> 1 date par semaine</li>
+                <li class="task-item"><input type="checkbox"> Voyage en couple</li>
+            </ul>
+        </div>
+
+        <div class="char-card">
+            <div class="char-header">
+                <div class="avatar">🧘‍♀️</div>
+                <div class="char-info">
+                    <h3>Vita la Vitaliste</h3>
+                    <div class="level-badge">LVL 4 - Éveillée</div>
+                </div>
+            </div>
+            <ul class="task-list">
+                <li class="task-item"><input type="checkbox"> 3 sessions sport/sem</li>
+                <li class="task-item"><input type="checkbox"> Sommeil > 7h</li>
+            </ul>
+        </div>
+
+        <div class="char-card">
+            <div class="char-header">
+                <div class="avatar">💰</div>
+                <div class="char-info">
+                    <h3>Aurum la Trésorière</h3>
+                    <div class="level-badge">LVL 3 - Épargnante</div>
+                </div>
+            </div>
+            <ul class="task-list">
+                <li class="task-item"><input type="checkbox"> Épargner 200€/mois</li>
+                <li class="task-item"><input type="checkbox"> Zéro achat compulsif</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Un petit script pour calculer le nombre de jours restants en 2026
+        const endOfYear = new Date('2026-12-31');
+        const today = new Date();
+        const diff = endOfYear - today;
+        const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+        document.getElementById('days-left').innerText = days > 0 ? days : 0;
+    </script>
+</body>
+</html>
