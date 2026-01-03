@@ -11,7 +11,6 @@
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
       import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-      // Configuration injectée depuis tes infos
       const firebaseConfig = {
         apiKey: "AIzaSyClodOEYVyAM9Cbau_8nnWcQAys3ec1rMI",
         authDomain: "elise-quest-2026.firebaseapp.com",
@@ -40,7 +39,6 @@
           window.init();
           if (window.activeCat) window.showCategory(window.activeCat);
         } else {
-          // Si premier lancement, on sauvegarde les données par défaut
           window.saveToCloud(window.data);
         }
       });
@@ -69,13 +67,22 @@
         .calendar-grid { display: flex; gap: 4px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
         .calendar-day { min-width: 14px; height: 14px; background: #21262d; border-radius: 2px; flex-shrink: 0; }
         .day-lvl-1 { background: #0e4429; } .day-lvl-2 { background: #006d32; } .day-lvl-3 { background: #26a641; } .day-lvl-4 { background: #39d353; box-shadow: 0 0 5px #39d353; }
+        
+        /* MENU CATEGORIES */
         .category-menu { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 95%; max-width: 900px; margin-bottom: 20px; }
         @media (min-width: 768px) { .category-menu { grid-template-columns: repeat(3, 1fr); } }
-        .menu-btn { color: #fff; border: none; font-family: 'Press Start 2P', cursive; padding: 15px 10px; cursor: pointer; border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 8px; box-shadow: 0 4px 0 rgba(0,0,0,0.4); transition: 0.2s; text-align: center; }
+        
+        .menu-btn { 
+            color: #fff; border: none; font-family: 'Press Start 2P', cursive; padding: 15px 5px; 
+            cursor: pointer; border-radius: 10px; display: flex; flex-direction: column; 
+            align-items: center; gap: 10px; box-shadow: 0 4px 0 rgba(0,0,0,0.4); 
+            transition: 0.2s; text-align: center; min-height: 100px; justify-content: space-between;
+        }
         .menu-btn .btn-icon { font-size: 1.5rem; }
-        .menu-btn .btn-label { font-size: 0.4rem; }
-        .menu-btn .btn-info { font-size: 0.35rem; background: rgba(0,0,0,0.2); padding: 3px; border-radius: 3px; }
+        .menu-btn .btn-label { font-size: 0.45rem; line-height: 1.2; }
+        .menu-btn .btn-stats-row { font-size: 0.35rem; opacity: 0.9; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 4px; width: 90%; }
         .menu-btn.active { outline: 3px solid #fff; transform: translateY(2px); box-shadow: none; }
+
         #active-quest-zone { position: relative; width: 95%; max-width: 900px; border: 3px solid #30363d; background: var(--panel-color); padding: 20px; display: none; border-radius: 12px; margin-top: 10px; box-sizing: border-box; margin-bottom: 40px; }
         .close-zone-btn { position: absolute; top: 10px; right: 10px; background: #000; border: 1px solid #8b949e; color: #8b949e; font-family: 'Press Start 2P', cursive; font-size: 0.6rem; padding: 5px; border-radius: 5px; z-index: 10; }
         .section-title { font-size: 0.45rem; color: #8b949e; margin: 25px 0 10px 0; display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding-bottom: 8px; }
@@ -119,7 +126,6 @@
 <script>
     const LEVELS = [0, 5, 15, 35, 85];
     
-    // Données par défaut (seront écrasées par le Cloud)
     window.data = {
         quotidien: { name: "Routine", avatar: "⚡", color: "var(--quotidien)", tasks: [] },
         culture: { name: "Biblios", avatar: "📚", color: "var(--culture)", tasks: [] },
@@ -142,15 +148,17 @@
         for (const [id, cat] of Object.entries(window.data)) {
             if (['streak', 'history', 'quotidien', 'lastDate', 'lastCompletedDate'].includes(id)) continue;
             const done = cat.tasks.filter(t => t.d).length;
+            const todo = cat.tasks.filter(t => !t.d).length;
             const lvl = getLevel(done);
             const displayName = id === 'bienetre' ? 'BIEN-ÊTRE' : id.toUpperCase();
+            
             const btn = document.createElement('button');
             btn.className = `menu-btn ${window.activeCat === id ? 'active' : ''}`;
             btn.style.backgroundColor = cat.color;
             btn.innerHTML = `
                 <span class="btn-icon">${cat.avatar}</span>
                 <span class="btn-label">${displayName}</span>
-                <span class="btn-info">L${lvl} | F:${done}</span>
+                <div class="btn-stats-row">lvl ${lvl} | c:${todo} f:${done}</div>
             `;
             btn.onclick = () => showCategory(id);
             menu.appendChild(btn);
@@ -164,7 +172,6 @@
         if (window.data.streak.lastDate !== today) {
             window.data.quotidien.tasks.forEach(t => t.d = false);
             window.data.streak.lastDate = today;
-            // On ne save pas ici pour éviter des boucles infinies au chargement
         }
     }
 
