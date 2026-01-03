@@ -3,12 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Elise Quest 2026</title>
+    <title>Elise Quest 2026 - Cloud</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <link rel="manifest" href="manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+      // Configuration injectée depuis tes infos
+      const firebaseConfig = {
+        apiKey: "AIzaSyClodOEYVyAM9Cbau_8nnWcQAys3ec1rMI",
+        authDomain: "elise-quest-2026.firebaseapp.com",
+        projectId: "elise-quest-2026",
+        storageBucket: "elise-quest-2026.firebasestorage.app",
+        messagingSenderId: "3782848040",
+        appId: "1:3782848040:web:c6f7bcf7088c93b974cf1d",
+        measurementId: "G-R1C96W33KJ"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const docRef = doc(db, "users", "elise_progress");
+
+      window.saveToCloud = async (newData) => {
+        try {
+            await setDoc(docRef, newData);
+        } catch (e) {
+            console.error("Erreur de sauvegarde : ", e);
+        }
+      };
+
+      onSnapshot(docRef, (doc) => {
+        if (doc.exists()) {
+          window.data = doc.data();
+          window.init();
+          if (window.activeCat) window.showCategory(window.activeCat);
+        } else {
+          // Si premier lancement, on sauvegarde les données par défaut
+          window.saveToCloud(window.data);
+        }
+      });
+    </script>
+
     <style>
         :root {
             --bg-color: #0b0e14; --panel-color: #161b22; --accent-color: #f85149;
@@ -16,95 +53,37 @@
             --culture: #1f6feb; --projets: #d29922; --etudes: #8957e5;
             --amour: #db61a2; --bienetre: #238636; --finance: #9e6a03;
         }
-
-        /* Empêcher le rebond sur mobile et améliorer le look */
         html { scroll-behavior: smooth; }
         body {
             background-color: var(--bg-color); color: var(--text-color);
             font-family: 'Press Start 2P', cursive; margin: 0; padding: 10px;
             display: flex; flex-direction: column; align-items: center;
-            -webkit-tap-highlight-color: transparent;
         }
-
-        /* HEADER */
-        #header-status {
-            width: 95%; max-width: 900px; border: 3px solid #30363d;
-            padding: 35px 15px 20px 15px; text-align: center; background: var(--panel-color);
-            margin-bottom: 20px; border-radius: 12px; position: relative;
-            box-sizing: border-box;
-        }
-
-        .streak-aside {
-            position: absolute; right: 10px; top: 10px;
-            display: flex; flex-direction: column; align-items: center;
-        }
+        #header-status { width: 95%; max-width: 900px; border: 3px solid #30363d; padding: 35px 15px 20px 15px; text-align: center; background: var(--panel-color); margin-bottom: 20px; border-radius: 12px; position: relative; box-sizing: border-box; }
+        .streak-aside { position: absolute; right: 10px; top: 10px; display: flex; flex-direction: column; align-items: center; }
         .streak-fire { font-size: 1.5rem; filter: drop-shadow(0 0 5px #ff9f43); }
         .streak-val { font-size: 0.5rem; color: #ff9f43; margin-top: 2px; }
-
-        .progress-container {
-            width: 100%; height: 20px; background: #000; border: 2px solid #30363d; 
-            margin: 15px 0; border-radius: 6px; overflow: hidden;
-        }
+        .progress-container { width: 100%; height: 20px; background: #000; border: 2px solid #30363d; margin: 15px 0; border-radius: 6px; overflow: hidden; }
         .bar { height: 100%; background: var(--xp-color); width: 0%; transition: width 0.5s ease; }
-
-        /* CALENDRIER QUOTIDIEN */
-        #daily-hub {
-            width: 95%; max-width: 900px; background: #0d1117;
-            border: 3px solid var(--quotidien); padding: 15px;
-            border-radius: 12px; margin-bottom: 20px; box-sizing: border-box;
-        }
+        #daily-hub { width: 95%; max-width: 900px; background: #0d1117; border: 3px solid var(--quotidien); padding: 15px; border-radius: 12px; margin-bottom: 20px; box-sizing: border-box; }
         .calendar-grid { display: flex; gap: 4px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
         .calendar-day { min-width: 14px; height: 14px; background: #21262d; border-radius: 2px; flex-shrink: 0; }
-        .day-lvl-1 { background: #0e4429; } .day-lvl-2 { background: #006d32; }
-        .day-lvl-3 { background: #26a641; } .day-lvl-4 { background: #39d353; box-shadow: 0 0 5px #39d353; }
-
-        /* MENU CATEGORIES */
-        .category-menu {
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); /* 2 colonnes sur mobile */
-            gap: 10px; width: 95%; max-width: 900px; margin-bottom: 20px;
-        }
+        .day-lvl-1 { background: #0e4429; } .day-lvl-2 { background: #006d32; } .day-lvl-3 { background: #26a641; } .day-lvl-4 { background: #39d353; box-shadow: 0 0 5px #39d353; }
+        .category-menu { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 95%; max-width: 900px; margin-bottom: 20px; }
         @media (min-width: 768px) { .category-menu { grid-template-columns: repeat(3, 1fr); } }
-
-        .menu-btn {
-            color: #fff; border: none; font-family: 'Press Start 2P', cursive; 
-            padding: 15px 10px; cursor: pointer; border-radius: 10px;
-            display: flex; flex-direction: column; align-items: center; gap: 8px;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.4); transition: 0.2s;
-            text-align: center;
-        }
+        .menu-btn { color: #fff; border: none; font-family: 'Press Start 2P', cursive; padding: 15px 10px; cursor: pointer; border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 8px; box-shadow: 0 4px 0 rgba(0,0,0,0.4); transition: 0.2s; text-align: center; }
         .menu-btn .btn-icon { font-size: 1.5rem; }
-        .menu-btn .btn-label { font-size: 0.4rem; line-height: 1.2; }
+        .menu-btn .btn-label { font-size: 0.4rem; }
         .menu-btn .btn-info { font-size: 0.35rem; background: rgba(0,0,0,0.2); padding: 3px; border-radius: 3px; }
         .menu-btn.active { outline: 3px solid #fff; transform: translateY(2px); box-shadow: none; }
-
-        /* ACTIVE ZONE */
-        #active-quest-zone {
-            position: relative; width: 95%; max-width: 900px; border: 3px solid #30363d;
-            background: var(--panel-color); padding: 20px; display: none;
-            border-radius: 12px; margin-top: 10px; box-sizing: border-box;
-            margin-bottom: 40px; /* Espace en bas pour respirer */
-        }
-
-        .close-zone-btn {
-            position: absolute; top: 10px; right: 10px; background: #000; border: 1px solid #8b949e;
-            color: #8b949e; font-family: 'Press Start 2P', cursive; font-size: 0.6rem;
-            padding: 5px; border-radius: 5px; z-index: 10;
-        }
-
+        #active-quest-zone { position: relative; width: 95%; max-width: 900px; border: 3px solid #30363d; background: var(--panel-color); padding: 20px; display: none; border-radius: 12px; margin-top: 10px; box-sizing: border-box; margin-bottom: 40px; }
+        .close-zone-btn { position: absolute; top: 10px; right: 10px; background: #000; border: 1px solid #8b949e; color: #8b949e; font-family: 'Press Start 2P', cursive; font-size: 0.6rem; padding: 5px; border-radius: 5px; z-index: 10; }
         .section-title { font-size: 0.45rem; color: #8b949e; margin: 25px 0 10px 0; display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding-bottom: 8px; }
-        .task-item {
-            display: flex; align-items: center; gap: 10px; background: #0d1117;
-            margin-bottom: 8px; padding: 12px; border-radius: 8px; border: 1px solid #30363d;
-        }
+        .task-item { display: flex; align-items: center; gap: 10px; background: #0d1117; margin-bottom: 8px; padding: 12px; border-radius: 8px; border: 1px solid #30363d; }
         .task-text { flex-grow: 1; font-size: 0.45rem; line-height: 1.4; }
         .task-item.done { border-color: var(--xp-color); opacity: 0.5; }
-        
         .add-zone { display: flex; gap: 8px; margin: 15px 0; }
-        input[type="text"] {
-            flex-grow: 1; background: #000; border: 1px solid #333;
-            color: #fff; padding: 12px; font-family: 'Press Start 2P'; font-size: 0.45rem; border-radius: 5px; min-width: 0;
-        }
+        input[type="text"] { flex-grow: 1; background: #000; border: 1px solid #333; color: #fff; padding: 12px; font-family: 'Press Start 2P'; font-size: 0.45rem; border-radius: 5px; min-width: 0; }
         .btn-add { background: var(--xp-color); border: none; padding: 12px; cursor: pointer; font-family: 'Press Start 2P'; font-size: 0.45rem; color: #000; border-radius: 5px; }
     </style>
 </head>
@@ -139,7 +118,9 @@
 
 <script>
     const LEVELS = [0, 5, 15, 35, 85];
-    let data = JSON.parse(localStorage.getItem('eliseQuest2026_Final_V11')) || {
+    
+    // Données par défaut (seront écrasées par le Cloud)
+    window.data = {
         quotidien: { name: "Routine", avatar: "⚡", color: "var(--quotidien)", tasks: [] },
         culture: { name: "Biblios", avatar: "📚", color: "var(--culture)", tasks: [] },
         projets: { name: "Nova", avatar: "🚀", color: "var(--projets)", tasks: [] },
@@ -151,20 +132,20 @@
         history: {}
     };
 
-    let activeCat = null;
+    window.activeCat = null;
 
-    function init() {
+    window.init = function() {
         checkDailyReset();
         renderCalendar();
         const menu = document.getElementById('menu');
         menu.innerHTML = '';
-        for (const [id, cat] of Object.entries(data)) {
+        for (const [id, cat] of Object.entries(window.data)) {
             if (['streak', 'history', 'quotidien', 'lastDate', 'lastCompletedDate'].includes(id)) continue;
             const done = cat.tasks.filter(t => t.d).length;
             const lvl = getLevel(done);
             const displayName = id === 'bienetre' ? 'BIEN-ÊTRE' : id.toUpperCase();
             const btn = document.createElement('button');
-            btn.className = `menu-btn ${activeCat === id ? 'active' : ''}`;
+            btn.className = `menu-btn ${window.activeCat === id ? 'active' : ''}`;
             btn.style.backgroundColor = cat.color;
             btn.innerHTML = `
                 <span class="btn-icon">${cat.avatar}</span>
@@ -175,15 +156,15 @@
             menu.appendChild(btn);
         }
         updateGlobal();
-        document.getElementById('streak-count').innerText = data.streak.count;
+        document.getElementById('streak-count').innerText = window.data.streak.count;
     }
 
     function checkDailyReset() {
         const today = new Date().toDateString();
-        if (data.streak.lastDate !== today) {
-            data.quotidien.tasks.forEach(t => t.d = false);
-            data.streak.lastDate = today;
-            save();
+        if (window.data.streak.lastDate !== today) {
+            window.data.quotidien.tasks.forEach(t => t.d = false);
+            window.data.streak.lastDate = today;
+            // On ne save pas ici pour éviter des boucles infinies au chargement
         }
     }
 
@@ -193,13 +174,13 @@
         for (let i = 29; i >= 0; i--) {
             const d = new Date(); d.setDate(today.getDate() - i);
             const dateStr = d.toDateString();
-            const score = data.history[dateStr] || 0;
+            const score = window.data.history[dateStr] || 0;
             const dayDiv = document.createElement('div');
             dayDiv.className = 'calendar-day';
             if (score > 0) dayDiv.classList.add(score > 75 ? 'day-lvl-4' : score > 50 ? 'day-lvl-3' : score > 25 ? 'day-lvl-2' : 'day-lvl-1');
             cal.appendChild(dayDiv);
         }
-        cal.scrollLeft = cal.scrollWidth; // Scroller à la fin pour voir aujourd'hui
+        cal.scrollLeft = cal.scrollWidth;
     }
 
     function getLevel(count) {
@@ -210,24 +191,20 @@
         return 1;
     }
 
-    function showCategory(id) {
-        activeCat = id;
+    window.showCategory = function(id) {
+        window.activeCat = id;
         const zone = document.getElementById('active-quest-zone');
         zone.style.display = 'block';
-        const cat = data[id];
+        const cat = window.data[id];
         const doneTasks = cat.tasks.filter(t => t.d);
         const todoTasks = cat.tasks.filter(t => !t.d);
         const lvl = getLevel(doneTasks.length);
         const xp = ((doneTasks.length - LEVELS[lvl-1]) / ((LEVELS[lvl] || 100) - LEVELS[lvl-1])) * 100;
-        const displayName = id === 'bienetre' ? 'BIEN-ÊTRE' : id.toUpperCase();
 
         document.getElementById('quest-content').innerHTML = `
             <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
                 <span style="font-size:2.5rem;">${cat.avatar}</span>
-                <div>
-                    <h2 style="font-size:0.7rem; margin:0; color:${cat.color}">${displayName}</h2>
-                    <p style="font-size:0.4rem;">NIVEAU ${lvl}</p>
-                </div>
+                <div><h2 style="font-size:0.7rem; margin:0; color:${cat.color}">${id === 'bienetre' ? 'BIEN-ÊTRE' : id.toUpperCase()}</h2><p style="font-size:0.4rem;">NIVEAU ${lvl}</p></div>
             </div>
             <div class="progress-container"><div class="bar" style="width:${xp}%; background:${cat.color}"></div></div>
             <div class="add-zone">
@@ -239,24 +216,19 @@
             <div class="section-title"><span>ACCOMPLI (${doneTasks.length})</span></div>
             <ul class="task-list" style="padding:0; list-style:none;">${renderTaskList(doneTasks, true)}</ul>
         `;
-        init();
         
-        // AUTO-SCROLL vers la zone active sur mobile
-        setTimeout(() => {
-            zone.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
+        setTimeout(() => { document.getElementById('active-quest-zone').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
     }
 
-    function closeCategory() {
+    window.closeCategory = function() {
         document.getElementById('active-quest-zone').style.display = 'none';
-        activeCat = null;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        init();
+        window.activeCat = null;
+        window.init();
     }
 
     function renderTaskList(tasks, isDone) {
         return tasks.map(t => {
-            const idx = data[activeCat].tasks.indexOf(t);
+            const idx = window.data[window.activeCat].tasks.indexOf(t);
             return `<li class="task-item ${isDone ? 'done' : ''}">
                 <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleTask(${idx})" style="width:20px; height:20px;">
                 <span class="task-text">${t.t}</span>
@@ -265,23 +237,23 @@
         }).join('');
     }
 
-    function toggleTask(idx) {
+    window.toggleTask = function(idx) {
         const today = new Date().toDateString();
-        const wasDone = data[activeCat].tasks[idx].d;
-        data[activeCat].tasks[idx].d = !data[activeCat].tasks[idx].d;
+        const wasDone = window.data[window.activeCat].tasks[idx].d;
+        window.data[window.activeCat].tasks[idx].d = !window.data[window.activeCat].tasks[idx].d;
 
-        if (activeCat === 'quotidien') {
-            const done = data.quotidien.tasks.filter(t => t.d).length;
-            data.history[today] = data.quotidien.tasks.length > 0 ? Math.round((done / data.quotidien.tasks.length) * 100) : 0;
+        if (window.activeCat === 'quotidien') {
+            const done = window.data.quotidien.tasks.filter(t => t.d).length;
+            window.data.history[today] = window.data.quotidien.tasks.length > 0 ? Math.round((done / window.data.quotidien.tasks.length) * 100) : 0;
         }
 
-        if (!wasDone && data[activeCat].tasks[idx].d && data.streak.lastCompletedDate !== today) {
-            data.streak.count++;
-            data.streak.lastCompletedDate = today;
+        if (!wasDone && window.data[window.activeCat].tasks[idx].d && window.data.streak.lastCompletedDate !== today) {
+            window.data.streak.count++;
+            window.data.streak.lastCompletedDate = today;
         }
         
-        if (activeCat !== 'quotidien' && !wasDone) {
-            const currentDone = data[activeCat].tasks.filter(t => t.d).length;
+        if (window.activeCat !== 'quotidien' && !wasDone) {
+            const currentDone = window.data[window.activeCat].tasks.filter(t => t.d).length;
             if (LEVELS.includes(currentDone)) {
                 document.getElementById('lvlup-sound').play();
                 confetti({ particleCount: 150, spread: 60, origin: { y: 0.7 } });
@@ -290,27 +262,27 @@
         saveAndRefresh();
     }
 
-    function addTask() {
+    window.addTask = function() {
         const val = document.getElementById('new-task-input').value;
-        if (val) { data[activeCat].tasks.push({t: val, d: false}); saveAndRefresh(); }
+        if (val) { window.data[window.activeCat].tasks.push({t: val, d: false}); saveAndRefresh(); }
     }
 
-    function deleteTask(idx) { data[activeCat].tasks.splice(idx, 1); saveAndRefresh(); }
+    window.deleteTask = function(idx) { window.data[window.activeCat].tasks.splice(idx, 1); saveAndRefresh(); }
 
     function updateGlobal() {
         let t = 0, d = 0;
         ['culture', 'projets', 'etudes', 'amour', 'bienetre', 'finance'].forEach(k => {
-            t += data[k].tasks.length;
-            d += data[k].tasks.filter(x => x.d).length;
+            t += window.data[k].tasks.length;
+            d += window.data[k].tasks.filter(x => x.d).length;
         });
         const finalPct = t === 0 ? 0 : Math.round((d / t) * 100);
         document.getElementById('global-bar').style.width = finalPct + '%';
         document.getElementById('global-val').innerText = finalPct;
     }
 
-    function save() { localStorage.setItem('eliseQuest2026_Final_V11', JSON.stringify(data)); }
-    function saveAndRefresh() { save(); if(activeCat) showCategory(activeCat); else init(); }
-    init();
+    function saveAndRefresh() {
+        if (window.saveToCloud) window.saveToCloud(window.data);
+    }
 </script>
 </body>
 </html>
