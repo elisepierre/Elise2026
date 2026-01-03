@@ -108,7 +108,7 @@
     <div id="daily-hub">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
             <span style="font-size: 0.5rem; color: var(--quotidien);">⚡ ROUTINE</span>
-            <button onclick="showCategory('quotidien')" style="background: var(--quotidien); border:none; padding: 8px; font-family: 'Press Start 2P'; font-size: 0.35rem; cursor:pointer; border-radius:5px; color:#000;">GERER</button>
+            <button id="routine-btn-label" onclick="showCategory('quotidien')" style="background: var(--quotidien); border:none; padding: 8px; font-family: 'Press Start 2P'; font-size: 0.35rem; cursor:pointer; border-radius:5px; color:#000;">GERER (0%)</button>
         </div>
         <div class="calendar-grid" id="calendar"></div>
     </div>
@@ -162,6 +162,13 @@
             btn.onclick = () => showCategory(id);
             menu.appendChild(btn);
         }
+
+        // Mise à jour spécifique du label de routine
+        const routineDone = window.data.quotidien.tasks.filter(t => t.d).length;
+        const routineTotal = window.data.quotidien.tasks.length;
+        const routinePct = routineTotal === 0 ? 0 : Math.round((routineDone / routineTotal) * 100);
+        document.getElementById('routine-btn-label').innerText = `GERER (${routinePct}%)`;
+
         updateGlobal();
         document.getElementById('streak-count').innerText = window.data.streak.count;
     }
@@ -204,13 +211,25 @@
         const cat = window.data[id];
         const doneTasks = cat.tasks.filter(t => t.d);
         const todoTasks = cat.tasks.filter(t => !t.d);
-        const lvl = getLevel(doneTasks.length);
-        const xp = ((doneTasks.length - LEVELS[lvl-1]) / ((LEVELS[lvl] || 100) - LEVELS[lvl-1])) * 100;
+        
+        let xp = 0;
+        let subtitle = "";
+
+        if (id === 'quotidien') {
+            xp = cat.tasks.length === 0 ? 0 : (doneTasks.length / cat.tasks.length) * 100;
+            subtitle = "OBJECTIF : 100%";
+        } else {
+            const lvl = getLevel(doneTasks.length);
+            xp = ((doneTasks.length - LEVELS[lvl-1]) / ((LEVELS[lvl] || 100) - LEVELS[lvl-1])) * 100;
+            subtitle = `RANG : NIVEAU ${lvl}`;
+        }
+
+        const displayName = id === 'bienetre' ? 'BIEN-ÊTRE' : id.toUpperCase();
 
         document.getElementById('quest-content').innerHTML = `
             <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
                 <span style="font-size:2.5rem;">${cat.avatar}</span>
-                <div><h2 style="font-size:0.7rem; margin:0; color:${cat.color}">${id === 'bienetre' ? 'BIEN-ÊTRE' : id.toUpperCase()}</h2><p style="font-size:0.4rem;">NIVEAU ${lvl}</p></div>
+                <div><h2 style="font-size:0.7rem; margin:0; color:${cat.color}">${displayName}</h2><p style="font-size:0.4rem;">${subtitle}</p></div>
             </div>
             <div class="progress-container"><div class="bar" style="width:${xp}%; background:${cat.color}"></div></div>
             <div class="add-zone">
@@ -222,6 +241,8 @@
             <div class="section-title"><span>ACCOMPLI (${doneTasks.length})</span></div>
             <ul class="task-list" style="padding:0; list-style:none;">${renderTaskList(doneTasks, true)}</ul>
         `;
+        
+        setTimeout(() => { document.getElementById('active-quest-zone').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
     }
 
     window.closeCategory = function() {
@@ -248,7 +269,7 @@
         
         cat.tasks[idx].d = !cat.tasks[idx].d;
 
-        // CORRECTION CALENDRIER (ROUTINE)
+        // MISE À JOUR DU CALENDRIER (ROUTINE)
         if (window.activeCat === 'quotidien') {
             const doneCount = cat.tasks.filter(t => t.d).length;
             if (doneCount === 0) {
@@ -258,7 +279,7 @@
             }
         }
 
-        // CORRECTION STREAK
+        // MISE À JOUR DU STREAK
         let totalDoneToday = 0;
         ['quotidien', 'culture', 'projets', 'etudes', 'amour', 'bienetre', 'finance'].forEach(k => {
             totalDoneToday += window.data[k].tasks.filter(t => t.d).length;
@@ -270,7 +291,6 @@
                 window.data.streak.lastCompletedDate = today;
             }
         } else {
-            // Si on vient de tout décocher pour aujourd'hui
             if (window.data.streak.lastCompletedDate === today) {
                 window.data.streak.count = Math.max(0, window.data.streak.count - 1);
                 window.data.streak.lastCompletedDate = null;
@@ -295,7 +315,7 @@
 
     window.deleteTask = function(idx) { 
         window.data[window.activeCat].tasks.splice(idx, 1); 
-        // Force le recalcul après suppression
+        // Force recalculation if it's the last task
         let totalDoneToday = 0;
         const today = new Date().toDateString();
         ['quotidien', 'culture', 'projets', 'etudes', 'amour', 'bienetre', 'finance'].forEach(k => {
