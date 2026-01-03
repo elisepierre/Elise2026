@@ -2,10 +2,13 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Elise Quest 2026</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
         :root {
             --bg-color: #0b0e14; --panel-color: #161b22; --accent-color: #f85149;
@@ -14,28 +17,32 @@
             --amour: #db61a2; --bienetre: #238636; --finance: #9e6a03;
         }
 
+        /* Empêcher le rebond sur mobile et améliorer le look */
+        html { scroll-behavior: smooth; }
         body {
             background-color: var(--bg-color); color: var(--text-color);
             font-family: 'Press Start 2P', cursive; margin: 0; padding: 10px;
             display: flex; flex-direction: column; align-items: center;
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* HEADER */
         #header-status {
             width: 95%; max-width: 900px; border: 3px solid #30363d;
-            padding: 35px 25px 25px 25px; text-align: center; background: var(--panel-color);
+            padding: 35px 15px 20px 15px; text-align: center; background: var(--panel-color);
             margin-bottom: 20px; border-radius: 12px; position: relative;
+            box-sizing: border-box;
         }
 
         .streak-aside {
-            position: absolute; right: 15px; top: 10px;
-            display: flex; flex-direction: column; align-items: center; gap: 2px;
+            position: absolute; right: 10px; top: 10px;
+            display: flex; flex-direction: column; align-items: center;
         }
-        .streak-fire { font-size: 1.8rem; filter: drop-shadow(0 0 5px #ff9f43); }
-        .streak-val { font-size: 0.6rem; color: #ff9f43; font-weight: bold; }
+        .streak-fire { font-size: 1.5rem; filter: drop-shadow(0 0 5px #ff9f43); }
+        .streak-val { font-size: 0.5rem; color: #ff9f43; margin-top: 2px; }
 
         .progress-container {
-            width: 100%; height: 28px; background: #000; border: 2px solid #30363d; 
+            width: 100%; height: 20px; background: #000; border: 2px solid #30363d; 
             margin: 15px 0; border-radius: 6px; overflow: hidden;
         }
         .bar { height: 100%; background: var(--xp-color); width: 0%; transition: width 0.5s ease; }
@@ -43,77 +50,80 @@
         /* CALENDRIER QUOTIDIEN */
         #daily-hub {
             width: 95%; max-width: 900px; background: #0d1117;
-            border: 3px solid var(--quotidien); padding: 20px;
-            border-radius: 12px; margin-bottom: 20px;
+            border: 3px solid var(--quotidien); padding: 15px;
+            border-radius: 12px; margin-bottom: 20px; box-sizing: border-box;
         }
-        .calendar-grid { display: flex; gap: 5px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
-        .calendar-day { min-width: 18px; height: 18px; background: #21262d; border-radius: 3px; }
+        .calendar-grid { display: flex; gap: 4px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
+        .calendar-day { min-width: 14px; height: 14px; background: #21262d; border-radius: 2px; flex-shrink: 0; }
         .day-lvl-1 { background: #0e4429; } .day-lvl-2 { background: #006d32; }
-        .day-lvl-3 { background: #26a641; } .day-lvl-4 { background: #39d353; box-shadow: 0 0 8px #39d353; }
+        .day-lvl-3 { background: #26a641; } .day-lvl-4 { background: #39d353; box-shadow: 0 0 5px #39d353; }
 
         /* MENU CATEGORIES */
         .category-menu {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px; width: 95%; max-width: 900px; margin-bottom: 20px;
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); /* 2 colonnes sur mobile */
+            gap: 10px; width: 95%; max-width: 900px; margin-bottom: 20px;
         }
+        @media (min-width: 768px) { .category-menu { grid-template-columns: repeat(3, 1fr); } }
+
         .menu-btn {
             color: #fff; border: none; font-family: 'Press Start 2P', cursive; 
-            padding: 20px; cursor: pointer; border-radius: 10px;
-            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            padding: 15px 10px; cursor: pointer; border-radius: 10px;
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
             box-shadow: 0 4px 0 rgba(0,0,0,0.4); transition: 0.2s;
+            text-align: center;
         }
-        .menu-btn:hover { transform: translateY(-3px); filter: brightness(1.1); }
-        .menu-btn.active { outline: 3px solid #fff; outline-offset: 4px; }
+        .menu-btn .btn-icon { font-size: 1.5rem; }
+        .menu-btn .btn-label { font-size: 0.4rem; line-height: 1.2; }
+        .menu-btn .btn-info { font-size: 0.35rem; background: rgba(0,0,0,0.2); padding: 3px; border-radius: 3px; }
+        .menu-btn.active { outline: 3px solid #fff; transform: translateY(2px); box-shadow: none; }
 
         /* ACTIVE ZONE */
         #active-quest-zone {
             position: relative; width: 95%; max-width: 900px; border: 3px solid #30363d;
-            background: var(--panel-color); padding: 30px; display: none;
+            background: var(--panel-color); padding: 20px; display: none;
             border-radius: 12px; margin-top: 10px; box-sizing: border-box;
+            margin-bottom: 40px; /* Espace en bas pour respirer */
         }
 
         .close-zone-btn {
-            position: absolute; top: 15px; right: 15px; background: none; border: 2px solid #8b949e;
-            color: #8b949e; font-family: 'Press Start 2P', cursive; font-size: 0.7rem;
-            cursor: pointer; padding: 5px 8px; border-radius: 5px;
+            position: absolute; top: 10px; right: 10px; background: #000; border: 1px solid #8b949e;
+            color: #8b949e; font-family: 'Press Start 2P', cursive; font-size: 0.6rem;
+            padding: 5px; border-radius: 5px; z-index: 10;
         }
-        .close-zone-btn:hover { background: var(--accent-color); color: white; border-color: white; }
 
-        .section-title { font-size: 0.55rem; color: #8b949e; margin: 30px 0 15px 0; display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .section-title { font-size: 0.45rem; color: #8b949e; margin: 25px 0 10px 0; display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding-bottom: 8px; }
         .task-item {
-            display: flex; align-items: center; gap: 15px; background: #0d1117;
-            margin-bottom: 10px; padding: 15px; border-radius: 8px; border: 1px solid #30363d;
+            display: flex; align-items: center; gap: 10px; background: #0d1117;
+            margin-bottom: 8px; padding: 12px; border-radius: 8px; border: 1px solid #30363d;
         }
-        .task-text { flex-grow: 1; font-size: 0.5rem; line-height: 1.5; }
+        .task-text { flex-grow: 1; font-size: 0.45rem; line-height: 1.4; }
         .task-item.done { border-color: var(--xp-color); opacity: 0.5; }
         
-        .add-zone { display: flex; gap: 10px; margin: 20px 0; }
+        .add-zone { display: flex; gap: 8px; margin: 15px 0; }
         input[type="text"] {
-            flex-grow: 1; background: #000; border: 2px solid #333;
-            color: #fff; padding: 15px; font-family: 'Press Start 2P'; font-size: 0.5rem; border-radius: 5px;
+            flex-grow: 1; background: #000; border: 1px solid #333;
+            color: #fff; padding: 12px; font-family: 'Press Start 2P'; font-size: 0.45rem; border-radius: 5px; min-width: 0;
         }
-        .btn-add { background: var(--xp-color); border: none; padding: 15px; cursor: pointer; font-family: 'Press Start 2P'; font-size: 0.55rem; color: #000; border-radius: 5px; }
+        .btn-add { background: var(--xp-color); border: none; padding: 12px; cursor: pointer; font-family: 'Press Start 2P'; font-size: 0.45rem; color: #000; border-radius: 5px; }
     </style>
-    <link rel="manifest" href="manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
 
     <div id="header-status">
-        <h1 style="font-size: 1.2rem; color: #fff; margin: 0;">ELISE QUEST 2026</h1>
+        <h1 style="font-size: 0.9rem; color: #fff; margin: 0; padding-right: 40px;">ELISE QUEST 2026</h1>
         <div class="streak-aside">
             <div class="streak-fire">🔥</div>
             <div id="streak-count" class="streak-val">0</div>
         </div>
         <div class="progress-container"><div id="global-bar" class="bar"></div></div>
-        <div style="font-size: 0.45rem; color: #8b949e;">PROGRESSION ANNUELLE : <span id="global-val">0</span>%</div>
+        <div style="font-size: 0.4rem; color: #8b949e;">ANNEE : <span id="global-val">0</span>%</div>
     </div>
 
     <div id="daily-hub">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <span style="font-size: 0.6rem; color: var(--quotidien);">⚡ ROUTINE QUOTIDIENNE</span>
-            <button onclick="showCategory('quotidien')" style="background: var(--quotidien); border:none; padding: 10px; font-family: 'Press Start 2P'; font-size: 0.4rem; cursor:pointer; border-radius:5px; color:#000;">GERER</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 0.5rem; color: var(--quotidien);">⚡ ROUTINE</span>
+            <button onclick="showCategory('quotidien')" style="background: var(--quotidien); border:none; padding: 8px; font-family: 'Press Start 2P'; font-size: 0.35rem; cursor:pointer; border-radius:5px; color:#000;">GERER</button>
         </div>
         <div class="calendar-grid" id="calendar"></div>
     </div>
@@ -129,7 +139,7 @@
 
 <script>
     const LEVELS = [0, 5, 15, 35, 85];
-    let data = JSON.parse(localStorage.getItem('eliseQuest2026_Final_V10')) || {
+    let data = JSON.parse(localStorage.getItem('eliseQuest2026_Final_V11')) || {
         quotidien: { name: "Routine", avatar: "⚡", color: "var(--quotidien)", tasks: [] },
         culture: { name: "Biblios", avatar: "📚", color: "var(--culture)", tasks: [] },
         projets: { name: "Nova", avatar: "🚀", color: "var(--projets)", tasks: [] },
@@ -151,16 +161,15 @@
         for (const [id, cat] of Object.entries(data)) {
             if (['streak', 'history', 'quotidien', 'lastDate', 'lastCompletedDate'].includes(id)) continue;
             const done = cat.tasks.filter(t => t.d).length;
-            const todo = cat.tasks.filter(t => !t.d).length;
             const lvl = getLevel(done);
             const displayName = id === 'bienetre' ? 'BIEN-ÊTRE' : id.toUpperCase();
             const btn = document.createElement('button');
             btn.className = `menu-btn ${activeCat === id ? 'active' : ''}`;
             btn.style.backgroundColor = cat.color;
             btn.innerHTML = `
-                <span style="font-size:2rem;">${cat.avatar}</span>
-                <span style="font-size:0.55rem;">${displayName}</span>
-                <span style="font-size:0.4rem; background:rgba(0,0,0,0.2); padding:5px; border-radius:4px;">LVL ${lvl} | FINI: ${done}</span>
+                <span class="btn-icon">${cat.avatar}</span>
+                <span class="btn-label">${displayName}</span>
+                <span class="btn-info">L${lvl} | F:${done}</span>
             `;
             btn.onclick = () => showCategory(id);
             menu.appendChild(btn);
@@ -190,6 +199,7 @@
             if (score > 0) dayDiv.classList.add(score > 75 ? 'day-lvl-4' : score > 50 ? 'day-lvl-3' : score > 25 ? 'day-lvl-2' : 'day-lvl-1');
             cal.appendChild(dayDiv);
         }
+        cal.scrollLeft = cal.scrollWidth; // Scroller à la fin pour voir aujourd'hui
     }
 
     function getLevel(count) {
@@ -212,29 +222,35 @@
         const displayName = id === 'bienetre' ? 'BIEN-ÊTRE' : id.toUpperCase();
 
         document.getElementById('quest-content').innerHTML = `
-            <div style="display:flex; align-items:center; gap:20px; margin-bottom:20px;">
-                <span style="font-size:3.5rem;">${cat.avatar}</span>
+            <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
+                <span style="font-size:2.5rem;">${cat.avatar}</span>
                 <div>
-                    <h2 style="font-size:1rem; margin:0; color:${cat.color}">${displayName}</h2>
-                    <p style="font-size:0.5rem;">RANG : NIVEAU ${lvl}</p>
+                    <h2 style="font-size:0.7rem; margin:0; color:${cat.color}">${displayName}</h2>
+                    <p style="font-size:0.4rem;">NIVEAU ${lvl}</p>
                 </div>
             </div>
             <div class="progress-container"><div class="bar" style="width:${xp}%; background:${cat.color}"></div></div>
             <div class="add-zone">
-                <input type="text" id="new-task-input" placeholder="QUÊTE..." onkeyup="if(event.key==='Enter') addTask()">
+                <input type="text" id="new-task-input" placeholder="AJOUTER..." onkeyup="if(event.key==='Enter') addTask()">
                 <button class="btn-add" style="background:${cat.color}" onclick="addTask()">OK</button>
             </div>
             <div class="section-title"><span>EN COURS (${todoTasks.length})</span></div>
-            <ul class="task-list">${renderTaskList(todoTasks, false)}</ul>
+            <ul class="task-list" style="padding:0; list-style:none;">${renderTaskList(todoTasks, false)}</ul>
             <div class="section-title"><span>ACCOMPLI (${doneTasks.length})</span></div>
-            <ul class="task-list">${renderTaskList(doneTasks, true)}</ul>
+            <ul class="task-list" style="padding:0; list-style:none;">${renderTaskList(doneTasks, true)}</ul>
         `;
         init();
+        
+        // AUTO-SCROLL vers la zone active sur mobile
+        setTimeout(() => {
+            zone.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
     }
 
     function closeCategory() {
         document.getElementById('active-quest-zone').style.display = 'none';
         activeCat = null;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         init();
     }
 
@@ -242,9 +258,9 @@
         return tasks.map(t => {
             const idx = data[activeCat].tasks.indexOf(t);
             return `<li class="task-item ${isDone ? 'done' : ''}">
-                <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleTask(${idx})" style="transform: scale(1.6);">
+                <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleTask(${idx})" style="width:20px; height:20px;">
                 <span class="task-text">${t.t}</span>
-                <span style="color:red; cursor:pointer; font-size:0.8rem;" onclick="deleteTask(${idx})">✖</span>
+                <span style="color:red; font-size:0.7rem;" onclick="deleteTask(${idx})">✖</span>
             </li>`;
         }).join('');
     }
@@ -292,7 +308,7 @@
         document.getElementById('global-val').innerText = finalPct;
     }
 
-    function save() { localStorage.setItem('eliseQuest2026_Final_V10', JSON.stringify(data)); }
+    function save() { localStorage.setItem('eliseQuest2026_Final_V11', JSON.stringify(data)); }
     function saveAndRefresh() { save(); if(activeCat) showCategory(activeCat); else init(); }
     init();
 </script>
