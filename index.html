@@ -222,8 +222,6 @@
             <div class="section-title"><span>ACCOMPLI (${doneTasks.length})</span></div>
             <ul class="task-list" style="padding:0; list-style:none;">${renderTaskList(doneTasks, true)}</ul>
         `;
-        
-        setTimeout(() => { document.getElementById('active-quest-zone').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
     }
 
     window.closeCategory = function() {
@@ -248,42 +246,38 @@
         const cat = window.data[window.activeCat];
         const wasDone = cat.tasks[idx].d;
         
-        // Inversion de l'état
         cat.tasks[idx].d = !cat.tasks[idx].d;
 
-        // MISE À JOUR DU CALENDRIER (ROUTINE)
+        // CORRECTION CALENDRIER (ROUTINE)
         if (window.activeCat === 'quotidien') {
             const doneCount = cat.tasks.filter(t => t.d).length;
             if (doneCount === 0) {
-                delete window.data.history[today]; // Si plus rien n'est fait, on efface l'entrée
+                delete window.data.history[today];
             } else {
                 window.data.history[today] = Math.round((doneCount / cat.tasks.length) * 100);
             }
         }
 
-        // MISE À JOUR DU STREAK (TOUTES CATEGORIES)
-        // On compte le total de tâches faites aujourd'hui dans TOUTES les catégories
+        // CORRECTION STREAK
         let totalDoneToday = 0;
         ['quotidien', 'culture', 'projets', 'etudes', 'amour', 'bienetre', 'finance'].forEach(k => {
             totalDoneToday += window.data[k].tasks.filter(t => t.d).length;
         });
 
         if (totalDoneToday > 0) {
-            // Si on vient de faire la première tâche de la journée
             if (window.data.streak.lastCompletedDate !== today) {
                 window.data.streak.count++;
                 window.data.streak.lastCompletedDate = today;
             }
         } else {
-            // Si on vient de décocher la DERNIÈRE tâche de la journée
+            // Si on vient de tout décocher pour aujourd'hui
             if (window.data.streak.lastCompletedDate === today) {
                 window.data.streak.count = Math.max(0, window.data.streak.count - 1);
                 window.data.streak.lastCompletedDate = null;
             }
         }
         
-        // Effets visuels seulement si on coche
-        if (!wasDone && cat.tasks[idx].d) {
+        if (!wasDone && cat.tasks[idx].d && window.activeCat !== 'quotidien') {
             const currentDone = cat.tasks.filter(t => t.d).length;
             if (LEVELS.includes(currentDone)) {
                 document.getElementById('lvlup-sound').play();
@@ -301,7 +295,17 @@
 
     window.deleteTask = function(idx) { 
         window.data[window.activeCat].tasks.splice(idx, 1); 
-        // On force un recalcul global après suppression pour le calendrier et streak
+        // Force le recalcul après suppression
+        let totalDoneToday = 0;
+        const today = new Date().toDateString();
+        ['quotidien', 'culture', 'projets', 'etudes', 'amour', 'bienetre', 'finance'].forEach(k => {
+            totalDoneToday += window.data[k].tasks.filter(t => t.d).length;
+        });
+        if (totalDoneToday === 0 && window.data.streak.lastCompletedDate === today) {
+            window.data.streak.count = Math.max(0, window.data.streak.count - 1);
+            window.data.streak.lastCompletedDate = null;
+            delete window.data.history[today];
+        }
         saveAndRefresh(); 
     }
 
